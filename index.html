@@ -5,7 +5,9 @@
 :root{--blue:#2563eb;--deep:#1e3a8a;--ink:#0f1b33;--mute:#5f6f8c;--line:#e3e9f5;--soft:#f4f7fd}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
+html,body{overflow-x:hidden}
 body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:#fff;line-height:1.6}
+section,footer{overflow-x:clip}
 a{color:inherit}
 img{display:block;max-width:100%}
 .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
@@ -16,8 +18,8 @@ img{display:block;max-width:100%}
 .strip span{white-space:nowrap}
 header{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 4px 18px rgba(30,58,138,.06)}
 header .wrap{display:flex;align-items:center;justify-content:space-between;height:72px}
-.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-size:21px;letter-spacing:.3px}
-.logo i{width:34px;height:34px;border-radius:9px;background:var(--blue);box-shadow:inset 0 0 0 8px #93c5fd}
+.logo{text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:21px;font-weight:700;letter-spacing:.3px;color:var(--ink)}
+.logo b{font-family:Arial,Helvetica,sans-serif}
 .logo b{color:var(--blue)}
 nav{display:flex;align-items:center;gap:26px}
 nav a{text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#334155}
@@ -91,8 +93,13 @@ section.alt{background:var(--soft)}
 .prod p{margin:0;color:var(--mute);font-size:14px}
 
 /* clients */
-.clients{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
-.client{height:86px;display:grid;place-items:center;border:1px solid var(--line);border-radius:12px;background:#fff;font-weight:700;letter-spacing:.14em;color:#334155;font-size:15px;text-transform:uppercase}
+.clients{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.client{height:96px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:12px;background:#fff;padding:0 14px}
+.client img{height:40px;max-width:120px;object-fit:contain;flex:none}
+.client .wordmark{font:italic 700 24px Georgia,serif;color:#e0457b;flex:none}
+.client span{display:block;overflow:hidden;white-space:nowrap;max-width:0;opacity:0;transform:translateX(-24px);font-weight:700;letter-spacing:.14em;color:#334155;font-size:15px;
+  transition:max-width .8s cubic-bezier(.2,.8,.2,1) var(--d),opacity .6s var(--d),transform .8s cubic-bezier(.2,.8,.2,1) var(--d),margin .8s var(--d)}
+.clients.in .client span{max-width:170px;opacity:1;transform:none;margin-left:16px}
 
 /* certificates */
 .certs{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
@@ -110,7 +117,8 @@ section.alt{background:var(--soft)}
 .num span{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#dbe6ff}
 
 /* contact */
-.contact{display:grid;grid-template-columns:minmax(0,420px);justify-content:center;gap:22px}
+.contact{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;max-width:860px;margin:0 auto}
+.card p{overflow-wrap:anywhere}
 .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:26px;text-align:center}
 .card h3{margin:0 0 8px;font-size:14px;letter-spacing:.18em;text-transform:uppercase;color:var(--blue)}
 .card p{margin:0;color:#334155}
@@ -134,7 +142,6 @@ footer p{font-size:14px;margin:0 0 8px}
   .welcome{grid-template-columns:1fr;gap:40px}
   .welcome .badge{left:12px;bottom:-18px}
   .products,.certs{grid-template-columns:1fr 1fr}
-  .clients{grid-template-columns:repeat(3,1fr)}
   .nums{grid-template-columns:repeat(3,1fr)}
   .fgrid{grid-template-columns:1fr 1fr}
 }
@@ -144,7 +151,6 @@ footer p{font-size:14px;margin:0 0 8px}
   .hero p{font-size:16px}
   .btn.ghost{margin:10px 0 0}
   .products,.certs,.ticks,.fgrid{grid-template-columns:1fr}
-  .clients{grid-template-columns:1fr 1fr}
   .nums{grid-template-columns:1fr 1fr}
 }
 /* ===== phones: compact, thumb-friendly layout ===== */
@@ -162,7 +168,7 @@ a.card:hover{border-color:var(--blue)}
   .strip .s-mail{display:none}
   header .wrap{height:60px}
   nav{top:60px}
-  .logo{font-size:19px}.logo i{width:30px;height:30px}
+  .logo{font-size:18px}
   .burger{padding:10px 14px}
   /* hero: photo stays visible, text sits at the bottom on a soft dark fade */
   .hero{height:auto;min-height:0;aspect-ratio:auto}
@@ -180,7 +186,7 @@ a.card:hover{border-color:var(--blue)}
   .head h2,.welcome h2{font-size:27px}
   .welcome{gap:34px}
   .welcome .btn{display:block;text-align:center}
-  .stack{margin:14px 14px 0 0}
+  .stack{margin:14px 28px 0 0}
   .welcome .badge{padding:12px 16px;left:10px;bottom:-16px}
   .welcome .badge b{font-size:26px}
   .taphint{right:22px;bottom:10px}
@@ -190,23 +196,30 @@ a.card:hover{border-color:var(--blue)}
   .swipe > *{flex:0 0 82%;scroll-snap-align:center}
   .prod:hover{transform:none}
   .swipe-hint{display:block;text-align:center;color:var(--mute);font-size:13px;margin-top:4px}
-  .clients{grid-template-columns:repeat(3,1fr);gap:10px}
-  .client{height:64px;font-size:11px;letter-spacing:.08em}
+  .clients{grid-template-columns:1fr 1fr;gap:10px}
+  .client{height:auto;min-height:96px;flex-direction:column;padding:14px 8px}
+  .client img{height:30px;max-width:100px}
+  .client .wordmark{font-size:20px}
+  .client span{font-size:12px;letter-spacing:.1em;max-width:none;max-height:0;transform:translateY(-10px);transition:max-height .8s var(--d),opacity .6s var(--d),transform .8s var(--d),margin .8s var(--d)}
+  .clients.in .client span{max-height:24px;margin:10px 0 0}
   .nums{gap:10px}
   .num{padding:18px 8px}
   .num:last-child{grid-column:1 / -1}
-  .contact{gap:12px}
+  .contact{gap:12px;grid-template-columns:1fr}
   .card{padding:18px}
   .fgrid{grid-template-columns:1fr 1fr;gap:26px 18px}
   .fgrid > div:first-child{grid-column:1 / -1}
   footer a{padding:8px 0;margin:0}
 }
-@media(prefers-reduced-motion:reduce){.slide,.prod,.stack img{transition:none}.welcome .badge.flip{animation:none}}
+@media(prefers-reduced-motion:reduce){.client span{transition:none!important}.slide,.prod,.stack img{transition:none}.welcome .badge.flip{animation:none}}
+/* space between the hero heading and the buttons */
+.hero h1{margin-bottom:28px}
+@media(max-width:600px){.hero h1{margin-bottom:22px}}
 </style></head><body>
 
 
 <header><div class="wrap">
-  <a class="logo" href="#top"><i></i><span>Sakib <b>Apparels</b></span></a>
+  <a class="logo" href="#top">Sakib <b>Apparels Ltd.</b></a>
   <button class="burger" id="burger" aria-expanded="false" aria-controls="nav">Menu</button>
   <nav id="nav">
     <a href="#top">Home</a><a href="#about">About Us</a><a href="#products">Products</a><a href="#clients">Clients</a><a href="#contact">Contact</a>
@@ -216,12 +229,10 @@ a.card:hover{border-color:var(--blue)}
 
 <section class="hero" id="top">
   <div class="slide on" style="background-image:url('images/factory-1.jpg')"></div>
-  <div class="slide" style="background-image:url('images/factory-2.jpg')"></div>
-  <div class="slide" style="background-image:url('images/factory-3.jpg')"></div>
+  <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1770196009760-bead9eb10514?auto=format&fit=crop&w=1800&q=70')"></div>
+  <div class="slide" style="background-image:url('images/factory-cutting.jpg');background-position:50% 65%"></div>
   <div class="wrap copy">
-    <small>Welcome to Sakib Apparels Ltd</small>
     <h1>Your trusted knitwear manufacturing partner</h1>
-    <p>Polos, T-shirts, hoodies, sweatshirts, tops and more, made in Savar, Dhaka for fashion brands around the world.</p>
     <div><a class="btn" href="#about">Discover more</a><a class="btn ghost" href="#contact">Contact us</a></div>
   </div>
   <div class="dots" id="dots"></div>
@@ -231,8 +242,7 @@ a.card:hover{border-color:var(--blue)}
   <div>
     <small>About us</small>
     <h2>Welcome to Sakib Apparels</h2>
-    <p>Sakib Apparels Ltd, established in 2016, is a renowned garment manufacturer committed to providing the best quality knitwear items such as polos, basic T-shirts, hoodies, sweatshirts, trousers, swimsuits, tops, crop tops and kids' items.</p>
-    <p>Our factory is situated in Hemayetpur, Savar, Dhaka, Bangladesh.</p>
+    <p>Sakib Apparels Ltd, established in 2016, is a renowned garment industry committed to providing you the best quality knitwear items such as Polos, Basic T-shirts, Hoodies, Sweatshirts, Trousers, Swimsuits, Tops, Crop tops, Kids items etc. It is situated in Hemayetpur, Savar, Dhaka, Bangladesh.</p>
     <a class="btn" href="#contact">Read more</a>
   </div>
   <div class="pic">
@@ -241,7 +251,7 @@ a.card:hover{border-color:var(--blue)}
       <img data-num="2016" data-label="Established" src="images/factory-cutting.jpg" alt="Cutting table at the Sakib Apparels factory" style="object-position:50% 70%">
       <img data-num="10" data-label="Years of experience" src="images/factory-2.jpg" alt="Sewing line at the Sakib Apparels factory">
       <img data-num="6" data-label="Product types" src="https://images.unsplash.com/photo-1768745888568-b3ef7c7ba366?auto=format&fit=crop&w=1100&q=70" alt="Fabric being sewn on an industrial machine">
-      <img data-num="5" data-label="Global brands" src="https://images.unsplash.com/photo-1721578006568-17901600cff3?auto=format&fit=crop&w=1100&q=70" alt="Team working together on a factory machine">
+      <img data-num="6" data-label="Global brands" src="images/factory-3.jpg" alt="Sweatshirts on the sewing line at the Sakib Apparels factory">
     </div>
     <div class="badge" id="badge" aria-live="polite"><b>2016</b><span>Established</span></div>
     <div class="taphint">Tap the photo</div>
@@ -263,9 +273,13 @@ a.card:hover{border-color:var(--blue)}
 
 <section class="block" id="clients"><div class="wrap">
   <div class="head"><small>Trusted by</small><h2>Our Clients</h2><p>Brands and buyers we are proud to work with.</p><div class="bar"></div></div>
-  <div class="clients">
-    <div class="client">ZARA</div><div class="client">BERSHKA</div><div class="client">Sugardoll</div>
-    <div class="client">Barbie</div><div class="client">UNIQLO</div>
+  <div class="clients" id="clientList">
+    <div class="client" style="--d:0s"><img src="images/clients/zara.svg" alt="ZARA logo"><span>ZARA</span></div>
+    <div class="client" style="--d:.12s"><img src="images/clients/bershka.svg" alt="Bershka logo"><span>BERSHKA</span></div>
+    <div class="client" style="--d:.24s"><b class="wordmark">Sugardoll</b><span>SUGARDOLL</span></div>
+    <div class="client" style="--d:.36s"><img src="images/clients/barbie.svg" alt="Barbie logo"><span>BARBIE</span></div>
+    <div class="client" style="--d:.48s"><img src="images/clients/uniqlo.svg" alt="UNIQLO logo"><span>UNIQLO</span></div>
+    <div class="client" style="--d:.6s"><img src="images/clients/levis.svg" alt="Levi's logo"><span>LEVI'S</span></div>
   </div>
 </div></section>
 
@@ -274,20 +288,23 @@ a.card:hover{border-color:var(--blue)}
   <div class="nums">
     <div class="num"><b data-to="10">10</b><span>Years of experience</span></div>
     <div class="num"><b data-to="6">6</b><span>Product types</span></div>
-    <div class="num"><b data-to="5">5</b><span>Global brands</span></div>
+    <div class="num"><b data-to="6">6</b><span>Global brands</span></div>
   </div>
 </div></section>
 
 <section class="block" id="contact"><div class="wrap">
-  <div class="head"><small>Get in touch</small><h2>Contact Us</h2><p>Visit our factory.</p><div class="bar"></div></div>
+  <div class="head"><small>Get in touch</small><h2>Contact Us</h2><p>Reach our head office or visit our factory.</p><div class="bar"></div></div>
   <div class="contact">
-    <div class="card"><h3>Address</h3><p>Hemayetpur, Savar,<br>Dhaka, Bangladesh</p></div>
+    <div class="card"><h3>Head Office</h3><p>House 15, Road 17, Sector 7,<br>Uttara, Dhaka, Bangladesh</p></div>
+    <div class="card"><h3>Factory</h3><p>Hemayetpur, Savar,<br>Dhaka, Bangladesh</p></div>
+    <a class="card" href="tel:+8801819550355"><h3>Phone</h3><p>01819-550355</p></a>
+    <a class="card" href="mailto:sakibapparelsltd@gmail.com"><h3>Email</h3><p>sakibapparelsltd@gmail.com</p></a>
   </div>
 </div></section>
 
 <footer>
   <div class="wrap fgrid">
-    <div><h4>Sakib Apparels Ltd</h4><p>Your trusted knitwear manufacturing partner.</p><p>Hemayetpur, Savar, Dhaka, Bangladesh</p></div>
+    <div><h4>Sakib Apparels Ltd</h4><p>Your trusted knitwear manufacturing partner.</p><p>Head office: House 15, Road 17, Sector 7, Uttara, Dhaka</p><p>Factory: Hemayetpur, Savar, Dhaka</p><p><a href="tel:+8801819550355">01819-550355</a><a href="mailto:sakibapparelsltd@gmail.com">sakibapparelsltd@gmail.com</a></p></div>
     <div><h4>Company</h4><a href="#about">About Us</a><a href="#products">Our Products</a><a href="#clients">Our Clients</a></div>
     <div><h4>Quick links</h4><a href="#contact">Contact Us</a></div>
   </div>
@@ -340,6 +357,8 @@ const io=new IntersectionObserver(es=>es.forEach(e=>{ if(!e.isIntersecting) retu
   const step=t=>{ const p=Math.min(1,(t-t0)/1400); el.textContent=fmt(Math.round(to*(1-Math.pow(1-p,3))))+(p===1?sfx:""); if(p<1) requestAnimationFrame(step); };
   requestAnimationFrame(step); setTimeout(()=>{ el.textContent=fmt(to)+sfx; },1600); }),{threshold:.4}); // the timeout makes sure the final number always shows
 document.querySelectorAll(".num b").forEach(el=>io.observe(el));
+const cl=document.getElementById("clientList");
+new IntersectionObserver((es,o)=>es.forEach(e=>{ if(e.isIntersecting){ cl.classList.add("in"); o.disconnect(); } }),{threshold:.35}).observe(cl);
 document.getElementById("yr").textContent=new Date().getFullYear();
 </script>
 </body></html>
