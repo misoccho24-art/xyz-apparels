@@ -1,4 +1,4 @@
-# XYZ Apparels - Order Tracker: Guide for the owner
+# Sakib Apparels - Order Tracker: Guide for the owner
 
 ## Two passwords
 - **Viewer password** - anyone you give it to can look at orders and designs (read only).
