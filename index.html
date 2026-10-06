@@ -89,7 +89,7 @@ section.alt{background:var(--soft)}
 .products{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
 .prod{position:relative;border-radius:14px;overflow:hidden;background:#fff;border:1px solid var(--line);box-shadow:0 8px 24px rgba(30,58,138,.07);transition:transform .25s,box-shadow .25s}
 .prod:hover{transform:translateY(-5px);box-shadow:0 18px 36px rgba(30,58,138,.14)}
-.prod img{width:100%;aspect-ratio:4/3;object-fit:cover}
+.prod img{width:100%;aspect-ratio:4/3;object-fit:contain;background:#fff;border-bottom:1px solid var(--line)}
 .prod div{padding:18px 20px 22px}
 .prod h3{margin:0 0 6px;font-size:19px}
 .prod p{margin:0;color:var(--mute);font-size:14px}
@@ -100,7 +100,7 @@ section.alt{background:var(--soft)}
 .client img{height:40px;max-width:120px;object-fit:contain;flex:none}
 .client .wordmark{font:italic 700 24px Georgia,serif;color:#e0457b;flex:none}
 .client span{display:block;overflow:hidden;white-space:nowrap;max-width:0;opacity:0;transform:translateX(-24px);font-weight:700;letter-spacing:.14em;color:#334155;font-size:15px;
-  transition:max-width .8s cubic-bezier(.2,.8,.2,1) var(--d),opacity .6s var(--d),transform .8s cubic-bezier(.2,.8,.2,1) var(--d),margin .8s var(--d)}
+  transition:max-width 2.2s cubic-bezier(.25,.8,.25,1) var(--d),opacity 1.6s ease var(--d),transform 2.2s cubic-bezier(.25,.8,.25,1) var(--d),margin 2.2s cubic-bezier(.25,.8,.25,1) var(--d)}
 .clients.in .client span{max-width:170px;opacity:1;transform:none;margin-left:16px}
 
 /* certificates */
@@ -204,7 +204,7 @@ a.card:hover{border-color:var(--blue)}
   .client{height:auto;min-height:96px;flex-direction:column;padding:14px 8px}
   .client img{height:30px;max-width:100px}
   .client .wordmark{font-size:20px}
-  .client span{font-size:12px;letter-spacing:.1em;max-width:none;max-height:0;transform:translateY(-10px);transition:max-height .8s var(--d),opacity .6s var(--d),transform .8s var(--d),margin .8s var(--d)}
+  .client span{font-size:12px;letter-spacing:.1em;max-width:none;max-height:0;transform:translateY(-10px);transition:max-height 2s ease var(--d),opacity 1.6s ease var(--d),transform 2s ease var(--d),margin 2s ease var(--d)}
   .clients.in .client span{max-height:24px;margin:10px 0 0}
   .nums{gap:10px}
   .num{padding:18px 8px}
@@ -265,13 +265,13 @@ a.card:hover{border-color:var(--blue)}
 
 <section class="block alt" id="products"><div class="wrap">
   <div class="head"><small>What we make</small><h2>Our Products</h2><p>Our main knitwear items.</p><div class="bar"></div></div>
-  <div class="products swipe"><!-- product photos are stock pictures: swap in real product photos when available -->
-    <div class="prod"><img src="https://images.unsplash.com/photo-1768745888568-b3ef7c7ba366?auto=format&fit=crop&w=800&q=70" alt="Fabric being sewn on an industrial machine" loading="lazy"><div><h3>Polos</h3></div></div>
-    <div class="prod"><img src="https://images.unsplash.com/photo-1770196016203-95f09b3af8cc?auto=format&fit=crop&w=800&q=70" alt="Blazer on a mannequin in a factory" loading="lazy"><div><h3>Printed T-shirts</h3></div></div>
-    <div class="prod"><img src="https://images.unsplash.com/photo-1770196035129-0a0affd4a519?auto=format&fit=crop&w=800&q=70" alt="Worker handling blue yarn on a machine" loading="lazy"><div><h3>Tops</h3></div></div>
-    <div class="prod"><img src="https://images.unsplash.com/photo-1780898770810-454e1593e42e?auto=format&fit=crop&w=800&q=70" alt="Stacks of colourful thread spools" loading="lazy"><div><h3>Crop Tops</h3></div></div>
-    <div class="prod"><img src="https://images.unsplash.com/photo-1772351721253-1008627c8c50?auto=format&fit=crop&w=800&q=70" alt="Industrial embroidery machine with many spools" loading="lazy"><div><h3>Hoodies</h3></div></div>
-    <div class="prod"><img src="https://images.unsplash.com/photo-1721578006568-17901600cff3?auto=format&fit=crop&w=800&q=70" alt="Team working together on a factory machine" loading="lazy"><div><h3>Sweatshirts</h3></div></div>
+  <div class="products swipe"><!-- product photos: free Unsplash pictures on white, stored in images/products -->
+    <div class="prod"><img src="images/products/polos.jpg" alt="Stack of folded polo shirts" loading="lazy"><div><h3>Polos</h3></div></div>
+    <div class="prod"><img src="images/products/printed-tshirts.jpg" alt="Black printed T-shirt" loading="lazy"><div><h3>Printed T-shirts</h3></div></div>
+    <div class="prod"><img src="images/products/tops.jpg" alt="Folded tops in pastel colours" loading="lazy"><div><h3>Tops</h3></div></div>
+    <div class="prod"><img src="images/products/crop-tops.jpg" alt="Black crop top, front and back" loading="lazy"><div><h3>Crop Tops</h3></div></div>
+    <div class="prod"><img src="images/products/hoodies.jpg" alt="Hoodies on hangers" loading="lazy"><div><h3>Hoodies</h3></div></div>
+    <div class="prod"><img src="images/products/sweatshirts.jpg" alt="Black sweatshirt on a hanger" loading="lazy"><div><h3>Sweatshirts</h3></div></div>
   </div>
   <p class="swipe-hint">Swipe to see more</p>
 </div></section>
@@ -280,11 +280,11 @@ a.card:hover{border-color:var(--blue)}
   <div class="head"><small>Trusted by</small><h2>Our Clients</h2><p>Brands and buyers we are proud to work with.</p><div class="bar"></div></div>
   <div class="clients" id="clientList">
     <div class="client" style="--d:0s"><img src="images/clients/zara.svg" alt="ZARA logo"><span>ZARA</span></div>
-    <div class="client" style="--d:.12s"><img src="images/clients/bershka.svg" alt="Bershka logo"><span>BERSHKA</span></div>
-    <div class="client" style="--d:.24s"><b class="wordmark">Sugardoll</b><span>SUGARDOLL</span></div>
-    <div class="client" style="--d:.36s"><img src="images/clients/barbie.svg" alt="Barbie logo"><span>BARBIE</span></div>
-    <div class="client" style="--d:.48s"><img src="images/clients/uniqlo.svg" alt="UNIQLO logo"><span>UNIQLO</span></div>
-    <div class="client" style="--d:.6s"><img src="images/clients/levis.svg" alt="Levi's logo"><span>LEVI'S</span></div>
+    <div class="client" style="--d:.45s"><img src="images/clients/bershka.svg" alt="Bershka logo"><span>BERSHKA</span></div>
+    <div class="client" style="--d:.9s"><b class="wordmark">Sugardoll</b><span>SUGARDOLL</span></div>
+    <div class="client" style="--d:1.35s"><img src="images/clients/barbie.svg" alt="Barbie logo"><span>BARBIE</span></div>
+    <div class="client" style="--d:1.8s"><img src="images/clients/uniqlo.svg" alt="UNIQLO logo"><span>UNIQLO</span></div>
+    <div class="client" style="--d:2.25s"><img src="images/clients/levis.svg" alt="Levi's logo"><span>LEVI'S</span></div>
   </div>
 </div></section>
 
@@ -363,7 +363,7 @@ const io=new IntersectionObserver(es=>es.forEach(e=>{ if(!e.isIntersecting) retu
   requestAnimationFrame(step); setTimeout(()=>{ el.textContent=fmt(to)+sfx; },1600); }),{threshold:.4}); // the timeout makes sure the final number always shows
 document.querySelectorAll(".num b").forEach(el=>io.observe(el));
 const cl=document.getElementById("clientList");
-new IntersectionObserver((es,o)=>es.forEach(e=>{ if(e.isIntersecting){ cl.classList.add("in"); o.disconnect(); } }),{threshold:.35}).observe(cl);
+new IntersectionObserver((es,o)=>es.forEach(e=>{ if(e.isIntersecting){ cl.classList.add("in"); o.disconnect(); } }),{threshold:.6}).observe(cl);
 document.getElementById("yr").textContent=new Date().getFullYear();
 </script>
 </body></html>
