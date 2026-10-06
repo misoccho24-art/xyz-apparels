@@ -148,10 +148,64 @@ footer p{font-size:14px;margin:0 0 8px}
   .clients{grid-template-columns:1fr 1fr}
   .nums{grid-template-columns:1fr 1fr}
 }
+/* ===== phones: compact, thumb-friendly layout ===== */
+.strip a{text-decoration:none;white-space:nowrap}
+a.card{display:block;text-decoration:none;transition:border-color .2s}
+a.card:hover{border-color:var(--blue)}
+.dots button{width:28px;height:28px;border:0;background:none;position:relative}
+.dots button::after{content:"";position:absolute;left:8px;top:8px;width:12px;height:12px;border-radius:50%;border:2px solid #fff;box-sizing:border-box}
+.dots button.on{background:none}
+.dots button.on::after{background:#fff}
+.swipe-hint{display:none}
+@media(max-width:600px){
+  .strip{font-size:12px}
+  .strip .wrap{padding-top:6px;padding-bottom:6px}
+  .strip .s-mail{display:none}
+  header .wrap{height:60px}
+  nav{top:60px}
+  .logo{font-size:19px}.logo i{width:30px;height:30px}
+  .burger{padding:10px 14px}
+  /* hero: photo stays visible, text sits at the bottom on a soft dark fade */
+  .hero{height:auto;min-height:0;aspect-ratio:auto}
+  .hero .copy{height:auto;min-height:min(78svh,620px);justify-content:flex-end;padding-top:120px;padding-bottom:64px}
+  .slide::after{background:linear-gradient(180deg,rgba(15,23,42,0) 0%,rgba(15,23,42,.1) 22%,rgba(15,23,42,.7) 52%,rgba(15,23,42,.88) 100%)}
+  .hero small{font-size:11px;letter-spacing:.2em}
+  .hero h1{font-size:32px;margin:10px 0 12px;text-shadow:0 2px 12px rgba(0,0,0,.35)}
+  .hero p{font-size:15px;margin-bottom:22px;text-shadow:0 1px 8px rgba(0,0,0,.4)}
+  .hero .copy > div{display:flex;flex-direction:column;gap:10px}
+  .hero .btn{display:block;text-align:center;padding:15px 20px}
+  .btn.ghost{margin:0}
+  .dots{bottom:14px}
+  section.block{padding:48px 0}
+  .head{margin-bottom:28px}
+  .head h2,.welcome h2{font-size:27px}
+  .welcome{gap:34px}
+  .welcome .btn{display:block;text-align:center}
+  .stack{margin:14px 14px 0 0}
+  .welcome .badge{padding:12px 16px;left:10px;bottom:-16px}
+  .welcome .badge b{font-size:26px}
+  .taphint{right:22px;bottom:10px}
+  /* products and certificates: swipe sideways instead of one very long column */
+  .swipe{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;margin:0 -20px;padding:4px 20px 16px;scrollbar-width:none}
+  .swipe::-webkit-scrollbar{display:none}
+  .swipe > *{flex:0 0 82%;scroll-snap-align:center}
+  .prod:hover{transform:none}
+  .swipe-hint{display:block;text-align:center;color:var(--mute);font-size:13px;margin-top:4px}
+  .clients{grid-template-columns:repeat(3,1fr);gap:10px}
+  .client{height:64px;font-size:11px;letter-spacing:.08em}
+  .nums{gap:10px}
+  .num{padding:18px 8px}
+  .num:last-child{grid-column:1 / -1}
+  .contact{gap:12px}
+  .card{padding:18px}
+  .fgrid{grid-template-columns:1fr 1fr;gap:26px 18px}
+  .fgrid > div:first-child{grid-column:1 / -1}
+  footer a{padding:8px 0;margin:0}
+}
 @media(prefers-reduced-motion:reduce){.slide,.prod,.stack img{transition:none}.welcome .badge.flip{animation:none}}
 </style></head><body>
 
-<div class="strip"><div class="wrap"><span>Email: info@xyzapparels.com</span><span>Phone: +880 1XXX-XXXXXX</span></div></div><!-- EDIT -->
+<div class="strip"><div class="wrap"><a class="s-mail" href="mailto:info@xyzapparels.com">Email: info@xyzapparels.com</a><a href="tel:+8801XXXXXXXXX">Phone: +880 1XXX-XXXXXX</a></div></div><!-- EDIT -->
 
 <header><div class="wrap">
   <a class="logo" href="#top"><i></i><span>XYZ <b>Apparels</b></span></a>
@@ -200,7 +254,7 @@ footer p{font-size:14px;margin:0 0 8px}
 
 <section class="block alt" id="products"><div class="wrap">
   <div class="head"><small>What we make</small><h2>Our Products</h2><p>A wide range of garments for men, women and children.</p><div class="bar"></div></div>
-  <div class="products"><!-- EDIT: product names, text and photos -->
+  <div class="products swipe"><!-- EDIT: product names, text and photos -->
     <div class="prod"><img src="https://images.unsplash.com/photo-1768745888568-b3ef7c7ba366?auto=format&fit=crop&w=800&q=70" alt="Fabric being sewn on an industrial machine" loading="lazy"><div><h3>Shirts</h3><p>Formal and casual woven shirts in every fabric and fit.</p></div></div>
     <div class="prod"><img src="https://images.unsplash.com/photo-1770196016203-95f09b3af8cc?auto=format&fit=crop&w=800&q=70" alt="Blazer on a mannequin in a factory" loading="lazy"><div><h3>Jackets &amp; Blazers</h3><p>Tailored outerwear finished to buyer standards.</p></div></div>
     <div class="prod"><img src="https://images.unsplash.com/photo-1770196035129-0a0affd4a519?auto=format&fit=crop&w=800&q=70" alt="Worker handling blue yarn on a machine" loading="lazy"><div><h3>Denim &amp; Trousers</h3><p>Denim, chino and cargo trousers with consistent washes.</p></div></div>
@@ -208,6 +262,7 @@ footer p{font-size:14px;margin:0 0 8px}
     <div class="prod"><img src="https://images.unsplash.com/photo-1772351721253-1008627c8c50?auto=format&fit=crop&w=800&q=70" alt="Industrial embroidery machine with many spools" loading="lazy"><div><h3>Embroidery &amp; Print</h3><p>In-house embroidery and printing for brand details.</p></div></div>
     <div class="prod"><img src="https://images.unsplash.com/photo-1721578006568-17901600cff3?auto=format&fit=crop&w=800&q=70" alt="Team working together on a factory machine" loading="lazy"><div><h3>Kids Wear</h3><p>Safe, comfortable garments for children of all ages.</p></div></div>
   </div>
+  <p class="swipe-hint">Swipe to see more</p>
 </div></section>
 
 <section class="block" id="clients"><div class="wrap">
@@ -220,11 +275,12 @@ footer p{font-size:14px;margin:0 0 8px}
 
 <section class="block alt" id="certificates"><div class="wrap">
   <div class="head"><small>Compliance</small><h2>Certificates</h2><p>We follow international standards for people, products and the planet.</p><div class="bar"></div></div>
-  <div class="certs"><!-- EDIT: list only certificates the company actually holds -->
+  <div class="certs swipe"><!-- EDIT: list only certificates the company actually holds -->
     <div class="cert"><div class="seal">01</div><h3>Social Compliance</h3><p>Fair working conditions, audited regularly against international labour standards.</p></div>
     <div class="cert"><div class="seal">02</div><h3>Product Safety</h3><p>Fabrics and trims tested so every garment is safe to wear.</p></div>
     <div class="cert"><div class="seal">03</div><h3>Ethical Sourcing</h3><p>Transparent, responsible supply chain shared openly with our buyers.</p></div>
   </div>
+  <p class="swipe-hint">Swipe to see more</p>
 </div></section>
 
 <section class="block stats"><div class="wrap">
@@ -242,8 +298,8 @@ footer p{font-size:14px;margin:0 0 8px}
   <div class="head"><small>Get in touch</small><h2>Contact Us</h2><p>Send us your tech pack or enquiry and we will get back to you.</p><div class="bar"></div></div>
   <div class="contact"><!-- EDIT -->
     <div class="card"><h3>Address</h3><p>Factory address,<br>Dhaka, Bangladesh</p></div>
-    <div class="card"><h3>Phone</h3><p>+880 1XXX-XXXXXX</p></div>
-    <div class="card"><h3>Email</h3><p><a href="mailto:info@xyzapparels.com">info@xyzapparels.com</a></p></div>
+    <a class="card" href="tel:+8801XXXXXXXXX"><h3>Phone</h3><p>+880 1XXX-XXXXXX</p></a>
+    <a class="card" href="mailto:info@xyzapparels.com"><h3>Email</h3><p>info@xyzapparels.com</p></a>
   </div>
 </div></section>
 
@@ -263,6 +319,11 @@ slides.forEach((_,i)=>{ const b=document.createElement("button"); b.setAttribute
 function show(i){ slides[cur].classList.remove("on"); dots.children[cur].classList.remove("on"); cur=i; slides[cur].classList.add("on"); dots.children[cur].classList.add("on"); }
 function restart(){ clearInterval(timer); timer=setInterval(()=>show((cur+1)%slides.length),5000); }
 show(0); restart();
+// swipe left / right on the hero to change photo
+let sx=null; const hero=document.querySelector(".hero");
+hero.addEventListener("touchstart",e=>{ sx=e.touches[0].clientX; },{passive:true});
+hero.addEventListener("touchend",e=>{ if(sx===null) return; const dx=e.changedTouches[0].clientX-sx; sx=null;
+  if(Math.abs(dx)>40){ show((cur+(dx<0?1:slides.length-1))%slides.length); restart(); } },{passive:true});
 
 // about us photo stack: click sweeps the front photo to the back and changes the badge
 (function(){
