@@ -59,7 +59,22 @@ section.alt{background:var(--soft)}
 .welcome small{font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--blue);font-weight:700}
 .welcome p{color:#475569;margin:0 0 16px}
 .welcome .pic{position:relative}
-.welcome .pic img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;box-shadow:0 24px 50px rgba(30,58,138,.2)}
+/* photo stack ("wallet"): back photos peek out, the front one sweeps away on click */
+.stack{position:relative;aspect-ratio:4/3;cursor:pointer;outline:0;margin:18px 18px 0 0}
+.stack img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:14px;box-shadow:0 18px 40px rgba(30,58,138,.22);border:4px solid #fff;
+  transition:transform .55s cubic-bezier(.2,.8,.2,1),opacity .55s;transform-origin:50% 100%}
+.stack img[data-pos="0"]{z-index:4;transform:none}
+.stack img[data-pos="1"]{z-index:3;transform:translate(12px,-12px) rotate(3deg) scale(.97)}
+.stack img[data-pos="2"]{z-index:2;transform:translate(24px,-22px) rotate(6deg) scale(.94)}
+.stack img[data-pos="3"]{z-index:1;transform:translate(24px,-22px) rotate(6deg) scale(.94);opacity:0}
+.stack img.out{z-index:5;transform:translate(-115%,30px) rotate(-14deg);opacity:0;transition:transform .5s cubic-bezier(.5,0,.75,0),opacity .5s .1s}
+.stack img.reset{transition:none}
+.stack:hover img[data-pos="0"]{transform:translateY(-4px)}
+.stack:focus-visible img[data-pos="0"]{box-shadow:0 0 0 4px #93c5fd,0 18px 40px rgba(30,58,138,.22)}
+.welcome .badge{z-index:6;transition:transform .3s}
+.welcome .badge.flip{animation:badgeFlip .5s ease}
+@keyframes badgeFlip{0%{transform:scale(1)}40%{transform:scale(.85);opacity:.4}100%{transform:scale(1);opacity:1}}
+.taphint{position:absolute;right:30px;bottom:12px;z-index:6;background:rgba(15,27,51,.65);color:#fff;font-size:12px;padding:6px 12px;border-radius:999px;pointer-events:none;letter-spacing:.06em}
 .welcome .badge{position:absolute;left:-22px;bottom:-22px;background:var(--blue);color:#fff;border-radius:14px;padding:18px 22px;box-shadow:0 14px 30px rgba(37,99,235,.35)}
 .welcome .badge b{display:block;font-size:34px;line-height:1}
 .welcome .badge span{font-size:12px;letter-spacing:.12em;text-transform:uppercase}
@@ -133,7 +148,7 @@ footer p{font-size:14px;margin:0 0 8px}
   .clients{grid-template-columns:1fr 1fr}
   .nums{grid-template-columns:1fr 1fr}
 }
-@media(prefers-reduced-motion:reduce){.slide{transition:none}.prod{transition:none}}
+@media(prefers-reduced-motion:reduce){.slide,.prod,.stack img{transition:none}.welcome .badge.flip{animation:none}}
 </style></head><body>
 
 <div class="strip"><div class="wrap"><span>Email: info@xyzapparels.com</span><span>Phone: +880 1XXX-XXXXXX</span></div></div><!-- EDIT -->
@@ -143,7 +158,7 @@ footer p{font-size:14px;margin:0 0 8px}
   <button class="burger" id="burger" aria-expanded="false" aria-controls="nav">Menu</button>
   <nav id="nav">
     <a href="#top">Home</a><a href="#about">About Us</a><a href="#products">Products</a><a href="#clients">Clients</a><a href="#certificates">Certificates</a><a href="#contact">Contact</a>
-    <a class="cta" href="orders.html">Order Tracker</a>
+
   </nav>
 </div></header>
 
@@ -171,8 +186,15 @@ footer p{font-size:14px;margin:0 0 8px}
     <a class="btn" href="#contact">Read more</a>
   </div>
   <div class="pic">
-    <img src="https://images.unsplash.com/photo-1772351721310-0aa6b2d5ee49?auto=format&fit=crop&w=1100&q=70" alt="Worker sewing on an industrial sewing machine" loading="lazy">
-    <div class="badge"><b>10+</b><span>Years of experience</span></div><!-- EDIT -->
+    <!-- photo stack: click to sweep the front photo away. EDIT: data-num / data-label are the badge text for each photo -->
+    <div class="stack" id="stack" role="button" tabindex="0" aria-label="Show next photo">
+      <img data-num="10+" data-label="Years of experience" src="https://images.unsplash.com/photo-1772351721310-0aa6b2d5ee49?auto=format&fit=crop&w=1100&q=70" alt="Worker sewing on an industrial sewing machine">
+      <img data-num="800+" data-label="Employees" src="https://images.unsplash.com/photo-1770196009760-bead9eb10514?auto=format&fit=crop&w=1100&q=70" alt="Worker inspecting fabric in the factory">
+      <img data-num="500+" data-label="Sewing machines" src="https://images.unsplash.com/photo-1768745888568-b3ef7c7ba366?auto=format&fit=crop&w=1100&q=70" alt="Fabric being sewn on an industrial machine">
+      <img data-num="25+" data-label="Partner brands" src="https://images.unsplash.com/photo-1721578006568-17901600cff3?auto=format&fit=crop&w=1100&q=70" alt="Team working together on a factory machine">
+    </div>
+    <div class="badge" id="badge" aria-live="polite"><b>10+</b><span>Years of experience</span></div>
+    <div class="taphint">Tap the photo</div>
   </div>
 </div></section>
 
@@ -229,7 +251,7 @@ footer p{font-size:14px;margin:0 0 8px}
   <div class="wrap fgrid">
     <div><h4>XYZ Apparels Ltd</h4><p>Quality garments for the global fashion market.</p><p>Dhaka, Bangladesh</p></div>
     <div><h4>Company</h4><a href="#about">About Us</a><a href="#products">Our Products</a><a href="#clients">Our Clients</a><a href="#certificates">Certificates</a></div>
-    <div><h4>Quick links</h4><a href="#contact">Contact Us</a><a href="orders.html">Order Tracker</a><a href="admin.html">Admin Panel</a></div>
+    <div><h4>Quick links</h4><a href="#contact">Contact Us</a></div>
   </div>
   <div class="copyright">Copyright &copy; <span id="yr"></span> XYZ Apparels Ltd. All rights reserved.</div>
 </footer>
@@ -241,6 +263,27 @@ slides.forEach((_,i)=>{ const b=document.createElement("button"); b.setAttribute
 function show(i){ slides[cur].classList.remove("on"); dots.children[cur].classList.remove("on"); cur=i; slides[cur].classList.add("on"); dots.children[cur].classList.add("on"); }
 function restart(){ clearInterval(timer); timer=setInterval(()=>show((cur+1)%slides.length),5000); }
 show(0); restart();
+
+// about us photo stack: click sweeps the front photo to the back and changes the badge
+(function(){
+  const stack=document.getElementById("stack"), badge=document.getElementById("badge"), hint=document.querySelector(".taphint");
+  let cards=[...stack.querySelectorAll("img")], busy=false;
+  const place=()=>cards.forEach((c,i)=>c.dataset.pos=Math.min(i,3));
+  const setBadge=c=>{ badge.querySelector("b").textContent=c.dataset.num; badge.querySelector("span").textContent=c.dataset.label;
+    badge.classList.remove("flip"); void badge.offsetWidth; badge.classList.add("flip"); };
+  place();
+  function next(){
+    if(busy) return; busy=true; if(hint) hint.remove();
+    const front=cards[0];
+    front.classList.add("out");                    // sweep the front photo away
+    cards=cards.slice(1).concat(front); place();   // the rest move forward
+    front.dataset.pos="0"; setBadge(cards[0]);
+    setTimeout(()=>{ front.classList.add("reset"); front.classList.remove("out"); front.dataset.pos=Math.min(cards.length-1,3);
+      void front.offsetWidth; front.classList.remove("reset"); busy=false; },520);
+  }
+  stack.addEventListener("click",next);
+  stack.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); next(); } });
+})();
 
 // phone menu
 const nav=document.getElementById("nav"), burger=document.getElementById("burger");

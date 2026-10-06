@@ -37,7 +37,7 @@ The website is plain files, so any free static host works:
 - **Netlify Drop** (https://app.netlify.com/drop): drag the whole `InvManagement` folder in, get a link.
 - or Cloudflare Pages / GitHub Pages / Firebase Hosting.
 
-Send the link + the viewer password to people who need to look. Admin Panel: `your-link/admin.html`.
+Send the link + the viewer password to people who need to look. Admin Panel: `your-link/admin-panel`.
 
 ## What you will see in the Sheet
 - **Designs** tab: one row per design (order, design number, image id, quantity, cutting, print, sewing, finishing, name).

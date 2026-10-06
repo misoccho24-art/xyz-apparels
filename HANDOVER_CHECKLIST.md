@@ -7,7 +7,7 @@ Tick each box as you go. Client Google account: **sohagmktdu17@gmail.com**
       `cd "C:\Users\HP\.vscode\Iftar\InvManagement"` then `npx.cmd serve -l 5500`
 - [ ] Open `http://localhost:5500` (use localhost, not the numbered address).
 - [ ] Viewer password opens the homepage. A wrong password is rejected.
-- [ ] Admin Panel (`/admin.html`): admin password works; the viewer password is rejected there.
+- [ ] Admin Panel (`/admin-panel`): admin password works; the viewer password is rejected there.
 - [ ] Add a design to Order 1, give it a product name, upload a picture, type a quantity, press Save. It says "Saved". The name shows on the order page.
 - [ ] Press **+ Add order**, add a design, Save. Reload: the new order is still there.
 - [ ] Click an image: the large view and details open. Try Replace image, and Delete (it asks to confirm).
@@ -24,7 +24,7 @@ Tick each box as you go. Client Google account: **sohagmktdu17@gmail.com**
 - [ ] Create a free Netlify account with the client's email (or the client does it).
 - [ ] Go to https://app.netlify.com/drop and drag the whole `InvManagement` folder in.
 - [ ] Copy the link it gives you.
-- [ ] Open the link: viewer login works, admin login works at `your-link/admin.html`, data loads.
+- [ ] Open the link: viewer login works, admin login works at `your-link/admin-panel`, data loads.
 - [ ] (Optional) Rename the site in Netlify to something readable.
 
 ## D. Security

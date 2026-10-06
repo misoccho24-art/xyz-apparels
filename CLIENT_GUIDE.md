@@ -2,7 +2,7 @@
 
 ## Two passwords
 - **Viewer password** - anyone you give it to can look at orders and designs (read only).
-- **Admin password** - lets you change things in the **Admin Panel** (`your-link/admin.html`).
+- **Admin password** - lets you change things in the **Admin Panel** (`your-link/admin-panel`).
   The admin password also opens the normal pages.
 
 The site logs you out by itself after **30 minutes** of no activity (never while you have unsaved changes).
@@ -35,7 +35,7 @@ Use long passwords (12+ characters). Write them down somewhere safe: Google does
 - **Export to Excel (CSV)**: a spreadsheet of all orders and designs, opens in Excel.
 
 ## For your team (viewers)
-- Search box on the Orders page (your-link/orders.html): type a design name, or an order name/number.
+- Search box on the Orders page (your-link/admin): type a design name, or an order name/number.
 - On an order page: filter the designs, see totals,
   and press **Print / PDF** for a clean printout.
 

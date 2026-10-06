@@ -125,18 +125,20 @@ async function start(role,fn){
   let r=null, saved=""; try{ saved=sessionStorage.getItem("pw")||""; }catch(e){}
   // viewers: show the last-seen data at once, then refresh quietly in the background
   if(role!=="admin" && saved && loadDataCache()){
-    PASS=saved; addLogout(); watchIdle(); fn();
+    PASS=saved; addLogout(); watchIdle(); document.body.classList.add("ready"); fn();
     const c=chip("Updating...");
     try{ await tryAuth(saved); await loadAll(); fn(); c.remove(); }
     catch(e){ if(/password|attempts/i.test(e.message)){ doLogout(); return; } c.textContent="Offline - showing saved data"; setTimeout(()=>c.remove(),4000); }
     return;
   }
-  if(saved){ try{ r=await tryAuth(saved); }catch(e){} }
+  // the page content stays hidden (style.css: body:not(.ready) main) until the password is confirmed
+  if(saved){ const ck=gate('<h3>Checking...</h3><p>One moment</p>'); try{ r=await tryAuth(saved); }catch(e){} ck.remove(); }
   while(!r||(role==="admin"&&r!=="admin")) r=await loginBox(role);
   const ld=gate('<h3>Loading...</h3><p>Fetching your orders</p>');
   try{ await loadAll(); }catch(e){ ld.querySelector(".gate-box").innerHTML='<h3>Could not load data</h3><p>'+(e.message||e)+'</p>'; return; }
   ld.remove();
   addLogout(); watchIdle();
+  document.body.classList.add("ready");
   fn();
 }
 // downscale to keep localStorage small

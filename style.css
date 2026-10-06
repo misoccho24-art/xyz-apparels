@@ -481,3 +481,6 @@ input.cell.pc-in{width:64px}
 .addrow{margin:0 0 12px}
 .addrow .btn.add{margin-top:0}
 a.brand{text-decoration:none;color:#fff}
+
+/* nothing behind the login is shown until the password is confirmed */
+body:not(.ready) main{visibility:hidden}
