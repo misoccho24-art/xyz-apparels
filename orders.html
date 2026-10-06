@@ -1,0 +1,53 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>XYZ Apparels Ltd - Orders</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css"></head><body>
+<div class="top"><div class="topbar"><a class="brand" href="index.html">XYZ <b>Apparels</b></a><div class="nav"><a href="index.html">Home</a><a href="orders.html">Orders</a><a href="admin.html">Admin Panel</a></div></div>
+<section class="hero"><div class="eyebrow">Production Overview</div><h1 id="co"></h1><p>Track every order and design from cutting to finishing.</p><div class="rule"></div></section></div>
+<main>
+<div class="searchbar"><input id="q" type="search" placeholder="Search designs by name, or orders by name or number..." autocomplete="off"></div>
+<div class="results" id="res" hidden></div>
+<div class="grid" id="grid"></div>
+</main>
+<footer>Quality Garments &middot; Order Management</footer>
+<script src="sheets-config.js"></script>
+<script src="app.js"></script><script>start("viewer",()=>{
+document.getElementById("co").textContent=COMPANY;
+const d=load(), q=document.getElementById("q"), res=document.getElementById("res"), grid=document.getElementById("grid");
+const T=id=>(d._titles&&d._titles[id])||"", U=id=>(d._updated&&d._updated[id])||"", P=id=>(d._products&&d._products[id])||"";
+
+grid.innerHTML=ORDERS.map(o=>{
+  const imgs=[]; for(let i=1;i<=designCount(d,o);i++){ const r=getRow(d,o.id,i); if(r.img) imgs.push(r.img); }
+  // 4 pictures at most (a 2x2 grid on phones); with more, the 4th shows "+N" on top of its picture
+  const extra=imgs.length-4;
+  const shown=imgs.slice(0,extra>0?3:4).map(s=>`<img src="${s}" alt="">`).join("");
+  const more=extra>0?`<div class="moreimg"><img src="${imgs[3]}" alt=""><span>+${extra}</span></div>`:"";
+  const nd=designCount(d,o);
+  const body=(nd?`<div class="cdesigns"><b>${nd}</b> design${nd===1?"":"s"}</div>`:"")+(imgs.length?`<div class="thumbs">${shown}${more}</div>`:(nd?"":`<div class="empty-note">No designs added yet</div>`));
+  return `<a class="card" style="--i:${o.id-1}" href="order.html?o=${o.id}"><span class="shine"></span><div class="no">${String(o.id).padStart(2,"0")}</div><div class="lbl">Order</div>`+
+    ((T(o.id)||P(o.id))?`<div class="ctitle">${T(o.id)?`<span class="nm">${esc(T(o.id))}</span>`:""}${pcBadge(P(o.id))}</div>`:"")+
+    ((d._dates&&d._dates[o.id])?`<div class="cdate">${fmtDate(d._dates[o.id])}</div>`:`<div class="cdate none">No date added</div>`)+
+    body+(U(o.id)?`<div class="cupd">Updated ${esc(fmtWhen(U(o.id)))}</div>`:"")+`<div class="go">&rarr;</div></a>`;
+}).join("");
+
+// search: designs by name, orders by name/number
+function search(){
+  const t=q.value.trim().toLowerCase();
+  if(!t){ res.hidden=true; grid.hidden=false; return; }
+  const items=[];
+  ORDERS.forEach(o=>{
+    if(("order "+o.id+" "+T(o.id)).toLowerCase().includes(t))
+      items.push(`<a class="rs" href="order.html?o=${o.id}"><div class="rs-img">#${o.id}</div><div class="rs-info"><b>Order ${o.id}${T(o.id)?" &middot; "+esc(T(o.id)):""}</b><small>Open this order</small></div></a>`);
+  });
+  ORDERS.forEach(o=>{
+    for(let i=1;i<=designCount(d,o);i++){
+      const r=getRow(d,o.id,i);
+      if((r.name||"").toLowerCase().includes(t) || ("design "+i)===t){
+        items.push(`<a class="rs" href="order.html?o=${o.id}&d=${i}"><div class="rs-img">${r.img?`<img src="${r.img}" alt="">`:"&#9707;"}</div><div class="rs-info"><b>${r.name?esc(r.name):"Design "+i}</b><small>Order ${o.id}${T(o.id)?" &middot; "+esc(T(o.id)):""} &middot; Design ${i}</small></div></a>`);
+      }
+    }
+  });
+  grid.hidden=true; res.hidden=false;
+  res.innerHTML=items.length?`<div class="rs-count">${items.length} result${items.length>1?"s":""}</div>`+items.slice(0,80).join(""):`<div class="rs-none">Nothing found for &ldquo;${esc(q.value.trim())}&rdquo;</div>`;
+}
+q.oninput=search; search();
+});</script></body></html>

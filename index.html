@@ -1,0 +1,259 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>XYZ Apparels Ltd - Garment Manufacturer</title>
+<meta name="description" content="XYZ Apparels Ltd - garment manufacturer of woven and knit wear for the global fashion market.">
+<style>
+/* Text marked "EDIT" in this file is placeholder content: replace it with the company's real details. */
+:root{--blue:#2563eb;--deep:#1e3a8a;--ink:#0f1b33;--mute:#5f6f8c;--line:#e3e9f5;--soft:#f4f7fd}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:#fff;line-height:1.6}
+a{color:inherit}
+img{display:block;max-width:100%}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+/* top strip + header */
+.strip{background:var(--deep);color:#dbe6ff;font-size:13px}
+.strip .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:8px;padding-bottom:8px}
+.strip span{white-space:nowrap}
+header{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 4px 18px rgba(30,58,138,.06)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;height:72px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-size:21px;letter-spacing:.3px}
+.logo i{width:34px;height:34px;border-radius:9px;background:var(--blue);box-shadow:inset 0 0 0 8px #93c5fd}
+.logo b{color:var(--blue)}
+nav{display:flex;align-items:center;gap:26px}
+nav a{text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#334155}
+nav a:hover{color:var(--blue)}
+nav a.cta{background:var(--blue);color:#fff;padding:10px 18px;border-radius:8px;letter-spacing:.06em}
+nav a.cta:hover{background:var(--deep);color:#fff}
+.burger{display:none;border:1px solid var(--line);background:#fff;border-radius:8px;padding:9px 12px;font-size:13px;font-weight:700;color:var(--blue);cursor:pointer}
+
+/* hero slider */
+.hero{position:relative;height:min(86vh,680px);min-height:440px;overflow:hidden;background:var(--deep)}
+.slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.2s ease}
+.slide.on{opacity:1}
+.slide::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,25,70,.9),rgba(10,25,70,.6) 55%,rgba(10,25,70,.3))}
+.hero .copy{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:center;color:#fff;max-width:640px}
+.hero small{font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:#bfdbfe}
+.hero h1{font-size:clamp(34px,5.4vw,58px);line-height:1.1;margin:14px 0 16px}
+.hero p{font-size:18px;color:#e2e8f0;margin:0 0 28px}
+.btn{display:inline-block;background:var(--blue);color:#fff;text-decoration:none;font-weight:700;padding:14px 26px;border-radius:8px;letter-spacing:.04em}
+.btn:hover{background:#1d4ed8}
+.btn.ghost{background:transparent;border:2px solid #fff;margin-left:10px}
+.btn.ghost:hover{background:#fff;color:var(--deep)}
+.dots{position:absolute;z-index:3;left:0;right:0;bottom:26px;display:flex;justify-content:center;gap:10px}
+.dots button{width:12px;height:12px;border-radius:50%;border:2px solid #fff;background:transparent;cursor:pointer;padding:0}
+.dots button.on{background:#fff}
+
+/* sections */
+section.block{padding:84px 0}
+section.alt{background:var(--soft)}
+.head{text-align:center;max-width:680px;margin:0 auto 46px}
+.head small{font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--blue);font-weight:700}
+.head h2{font-size:clamp(28px,3.6vw,38px);margin:10px 0 12px;line-height:1.2}
+.head p{color:var(--mute);margin:0}
+.bar{width:60px;height:3px;background:var(--blue);margin:16px auto 0;border-radius:3px}
+
+/* welcome */
+.welcome{display:grid;grid-template-columns:1.05fr 1fr;gap:56px;align-items:center}
+.welcome h2{font-size:clamp(28px,3.6vw,38px);line-height:1.2;margin:10px 0 18px}
+.welcome small{font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--blue);font-weight:700}
+.welcome p{color:#475569;margin:0 0 16px}
+.welcome .pic{position:relative}
+.welcome .pic img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;box-shadow:0 24px 50px rgba(30,58,138,.2)}
+.welcome .badge{position:absolute;left:-22px;bottom:-22px;background:var(--blue);color:#fff;border-radius:14px;padding:18px 22px;box-shadow:0 14px 30px rgba(37,99,235,.35)}
+.welcome .badge b{display:block;font-size:34px;line-height:1}
+.welcome .badge span{font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+.ticks{list-style:none;padding:0;margin:0 0 26px;display:grid;grid-template-columns:1fr 1fr;gap:8px 18px}
+.ticks li{position:relative;padding-left:22px;font-weight:700;font-size:15px}
+.ticks li::before{content:"";position:absolute;left:0;top:7px;width:10px;height:10px;border-radius:2px;background:var(--blue)}
+
+/* products */
+.products{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.prod{position:relative;border-radius:14px;overflow:hidden;background:#fff;border:1px solid var(--line);box-shadow:0 8px 24px rgba(30,58,138,.07);transition:transform .25s,box-shadow .25s}
+.prod:hover{transform:translateY(-5px);box-shadow:0 18px 36px rgba(30,58,138,.14)}
+.prod img{width:100%;aspect-ratio:4/3;object-fit:cover}
+.prod div{padding:18px 20px 22px}
+.prod h3{margin:0 0 6px;font-size:19px}
+.prod p{margin:0;color:var(--mute);font-size:14px}
+
+/* clients */
+.clients{display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
+.client{height:86px;display:grid;place-items:center;border:1px solid var(--line);border-radius:12px;background:#fff;font-weight:700;letter-spacing:.14em;color:#94a3b8;font-size:14px;text-transform:uppercase}
+
+/* certificates */
+.certs{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.cert{background:#fff;border:1px solid var(--line);border-top:4px solid var(--blue);border-radius:12px;padding:28px 26px;box-shadow:0 8px 24px rgba(30,58,138,.06)}
+.cert .seal{width:54px;height:54px;border-radius:50%;border:3px solid var(--blue);display:grid;place-items:center;font-weight:700;color:var(--blue);font-size:13px;margin-bottom:16px}
+.cert h3{margin:0 0 8px;font-size:19px}
+.cert p{margin:0;color:var(--mute);font-size:14px}
+
+/* excellence (stats) */
+.stats{background:linear-gradient(120deg,var(--deep),var(--blue));color:#fff}
+.stats .head small{color:#bfdbfe}.stats .head p{color:#dbe6ff}.stats .bar{background:#fff}
+.nums{display:grid;grid-template-columns:repeat(5,1fr);gap:18px}
+.num{text-align:center;padding:26px 10px;border:1px solid rgba(255,255,255,.25);border-radius:14px;background:rgba(255,255,255,.07)}
+.num b{display:block;font-size:clamp(32px,4vw,46px);line-height:1.1}
+.num span{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#dbe6ff}
+
+/* contact */
+.contact{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:26px;text-align:center}
+.card h3{margin:0 0 8px;font-size:14px;letter-spacing:.18em;text-transform:uppercase;color:var(--blue)}
+.card p{margin:0;color:#334155}
+
+/* footer */
+footer{background:#0b1220;color:#cbd5e1;padding:56px 0 0}
+.fgrid{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:36px;padding-bottom:40px}
+footer h4{color:#fff;margin:0 0 14px;font-size:15px;letter-spacing:.14em;text-transform:uppercase}
+footer a{display:block;text-decoration:none;color:#cbd5e1;margin:0 0 8px;font-size:14px}
+footer a:hover{color:#fff}
+footer p{font-size:14px;margin:0 0 8px}
+.copyright{background:var(--blue);color:#fff;text-align:center;font-size:13px;padding:16px 20px}
+
+/* phones and tablets */
+@media(max-width:900px){
+  .burger{display:block}
+  nav{position:absolute;top:72px;left:0;right:0;background:#fff;flex-direction:column;align-items:stretch;gap:0;border-bottom:1px solid var(--line);display:none;box-shadow:0 14px 24px rgba(30,58,138,.1)}
+  nav.open{display:flex}
+  nav a{padding:15px 20px;border-top:1px solid var(--line)}
+  nav a.cta{margin:12px 20px 16px;text-align:center}
+  .welcome{grid-template-columns:1fr;gap:40px}
+  .welcome .badge{left:12px;bottom:-18px}
+  .products,.certs,.contact{grid-template-columns:1fr 1fr}
+  .clients{grid-template-columns:repeat(3,1fr)}
+  .nums{grid-template-columns:repeat(3,1fr)}
+  .fgrid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:600px){
+  section.block{padding:60px 0}
+  .strip .wrap{justify-content:center}
+  .hero p{font-size:16px}
+  .btn.ghost{margin:10px 0 0}
+  .products,.certs,.contact,.ticks,.fgrid{grid-template-columns:1fr}
+  .clients{grid-template-columns:1fr 1fr}
+  .nums{grid-template-columns:1fr 1fr}
+}
+@media(prefers-reduced-motion:reduce){.slide{transition:none}.prod{transition:none}}
+</style></head><body>
+
+<div class="strip"><div class="wrap"><span>Email: info@xyzapparels.com</span><span>Phone: +880 1XXX-XXXXXX</span></div></div><!-- EDIT -->
+
+<header><div class="wrap">
+  <a class="logo" href="#top"><i></i><span>XYZ <b>Apparels</b></span></a>
+  <button class="burger" id="burger" aria-expanded="false" aria-controls="nav">Menu</button>
+  <nav id="nav">
+    <a href="#top">Home</a><a href="#about">About Us</a><a href="#products">Products</a><a href="#clients">Clients</a><a href="#certificates">Certificates</a><a href="#contact">Contact</a>
+    <a class="cta" href="orders.html">Order Tracker</a>
+  </nav>
+</div></header>
+
+<section class="hero" id="top">
+  <div class="slide on" style="background-image:url('https://images.unsplash.com/photo-1768746350424-ee28a364dcf5?auto=format&fit=crop&w=1800&q=70')"></div>
+  <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1770196009760-bead9eb10514?auto=format&fit=crop&w=1800&q=70')"></div>
+  <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1783070610671-1cc98dffba42?auto=format&fit=crop&w=1800&q=70')"></div>
+  <div class="wrap copy">
+    <small>Welcome to XYZ Apparels Ltd</small>
+    <h1>Quality garments, made with care and delivered on time</h1>
+    <p>Woven and knit wear for fashion brands around the world, from first sample to final shipment.</p>
+    <div><a class="btn" href="#about">Discover more</a><a class="btn ghost" href="#contact">Contact us</a></div>
+  </div>
+  <div class="dots" id="dots"></div>
+</section>
+
+<section class="block" id="about"><div class="wrap welcome">
+  <div>
+    <small>About us</small>
+    <h2>Welcome to XYZ Apparels</h2>
+    <!-- EDIT: the company's own story -->
+    <p>Established in 20XX, XYZ Apparels Ltd. is a garment manufacturer committed to quality, compliance and sustainability. We produce shirts, trousers, denim, knitwear and more for buyers in the global fashion market.</p>
+    <p>Every order is tracked from cutting and printing to sewing and finishing, so our buyers always know where their goods stand.</p>
+    <ul class="ticks"><li>Skilled workforce</li><li>Modern machinery</li><li>Strict quality control</li><li>On-time delivery</li></ul>
+    <a class="btn" href="#contact">Read more</a>
+  </div>
+  <div class="pic">
+    <img src="https://images.unsplash.com/photo-1772351721310-0aa6b2d5ee49?auto=format&fit=crop&w=1100&q=70" alt="Worker sewing on an industrial sewing machine" loading="lazy">
+    <div class="badge"><b>10+</b><span>Years of experience</span></div><!-- EDIT -->
+  </div>
+</div></section>
+
+<section class="block alt" id="products"><div class="wrap">
+  <div class="head"><small>What we make</small><h2>Our Products</h2><p>A wide range of garments for men, women and children.</p><div class="bar"></div></div>
+  <div class="products"><!-- EDIT: product names, text and photos -->
+    <div class="prod"><img src="https://images.unsplash.com/photo-1768745888568-b3ef7c7ba366?auto=format&fit=crop&w=800&q=70" alt="Fabric being sewn on an industrial machine" loading="lazy"><div><h3>Shirts</h3><p>Formal and casual woven shirts in every fabric and fit.</p></div></div>
+    <div class="prod"><img src="https://images.unsplash.com/photo-1770196016203-95f09b3af8cc?auto=format&fit=crop&w=800&q=70" alt="Blazer on a mannequin in a factory" loading="lazy"><div><h3>Jackets &amp; Blazers</h3><p>Tailored outerwear finished to buyer standards.</p></div></div>
+    <div class="prod"><img src="https://images.unsplash.com/photo-1770196035129-0a0affd4a519?auto=format&fit=crop&w=800&q=70" alt="Worker handling blue yarn on a machine" loading="lazy"><div><h3>Denim &amp; Trousers</h3><p>Denim, chino and cargo trousers with consistent washes.</p></div></div>
+    <div class="prod"><img src="https://images.unsplash.com/photo-1780898770810-454e1593e42e?auto=format&fit=crop&w=800&q=70" alt="Stacks of colourful thread spools" loading="lazy"><div><h3>Knitwear</h3><p>T-shirts, polos and sweatshirts in cotton and blends.</p></div></div>
+    <div class="prod"><img src="https://images.unsplash.com/photo-1772351721253-1008627c8c50?auto=format&fit=crop&w=800&q=70" alt="Industrial embroidery machine with many spools" loading="lazy"><div><h3>Embroidery &amp; Print</h3><p>In-house embroidery and printing for brand details.</p></div></div>
+    <div class="prod"><img src="https://images.unsplash.com/photo-1721578006568-17901600cff3?auto=format&fit=crop&w=800&q=70" alt="Team working together on a factory machine" loading="lazy"><div><h3>Kids Wear</h3><p>Safe, comfortable garments for children of all ages.</p></div></div>
+  </div>
+</div></section>
+
+<section class="block" id="clients"><div class="wrap">
+  <div class="head"><small>Trusted by</small><h2>Our Clients</h2><p>Brands and buyers we are proud to work with.</p><div class="bar"></div></div>
+  <div class="clients"><!-- EDIT: replace each box with a client's logo image -->
+    <div class="client">Brand 1</div><div class="client">Brand 2</div><div class="client">Brand 3</div>
+    <div class="client">Brand 4</div><div class="client">Brand 5</div><div class="client">Brand 6</div>
+  </div>
+</div></section>
+
+<section class="block alt" id="certificates"><div class="wrap">
+  <div class="head"><small>Compliance</small><h2>Certificates</h2><p>We follow international standards for people, products and the planet.</p><div class="bar"></div></div>
+  <div class="certs"><!-- EDIT: list only certificates the company actually holds -->
+    <div class="cert"><div class="seal">01</div><h3>Social Compliance</h3><p>Fair working conditions, audited regularly against international labour standards.</p></div>
+    <div class="cert"><div class="seal">02</div><h3>Product Safety</h3><p>Fabrics and trims tested so every garment is safe to wear.</p></div>
+    <div class="cert"><div class="seal">03</div><h3>Ethical Sourcing</h3><p>Transparent, responsible supply chain shared openly with our buyers.</p></div>
+  </div>
+</div></section>
+
+<section class="block stats"><div class="wrap">
+  <div class="head"><small>Our excellence</small><h2>XYZ Apparels in numbers</h2><div class="bar"></div></div>
+  <div class="nums"><!-- EDIT: the real numbers (data-to) and labels -->
+    <div class="num"><b data-to="10" data-suffix="+">10+</b><span>Years of experience</span></div>
+    <div class="num"><b data-to="25" data-suffix="+">25+</b><span>Partner brands</span></div>
+    <div class="num"><b data-to="500" data-suffix="+">500+</b><span>Sewing machines</span></div>
+    <div class="num"><b data-to="20000">20,000</b><span>Sq.M factory</span></div>
+    <div class="num"><b data-to="800" data-suffix="+">800+</b><span>Employees</span></div>
+  </div>
+</div></section>
+
+<section class="block" id="contact"><div class="wrap">
+  <div class="head"><small>Get in touch</small><h2>Contact Us</h2><p>Send us your tech pack or enquiry and we will get back to you.</p><div class="bar"></div></div>
+  <div class="contact"><!-- EDIT -->
+    <div class="card"><h3>Address</h3><p>Factory address,<br>Dhaka, Bangladesh</p></div>
+    <div class="card"><h3>Phone</h3><p>+880 1XXX-XXXXXX</p></div>
+    <div class="card"><h3>Email</h3><p><a href="mailto:info@xyzapparels.com">info@xyzapparels.com</a></p></div>
+  </div>
+</div></section>
+
+<footer>
+  <div class="wrap fgrid">
+    <div><h4>XYZ Apparels Ltd</h4><p>Quality garments for the global fashion market.</p><p>Dhaka, Bangladesh</p></div>
+    <div><h4>Company</h4><a href="#about">About Us</a><a href="#products">Our Products</a><a href="#clients">Our Clients</a><a href="#certificates">Certificates</a></div>
+    <div><h4>Quick links</h4><a href="#contact">Contact Us</a><a href="orders.html">Order Tracker</a><a href="admin.html">Admin Panel</a></div>
+  </div>
+  <div class="copyright">Copyright &copy; <span id="yr"></span> XYZ Apparels Ltd. All rights reserved.</div>
+</footer>
+
+<script>
+// hero slider: fades every 5 seconds, dots jump to a slide
+const slides=[...document.querySelectorAll(".slide")], dots=document.getElementById("dots"); let cur=0, timer;
+slides.forEach((_,i)=>{ const b=document.createElement("button"); b.setAttribute("aria-label","Slide "+(i+1)); b.onclick=()=>{ show(i); restart(); }; dots.appendChild(b); });
+function show(i){ slides[cur].classList.remove("on"); dots.children[cur].classList.remove("on"); cur=i; slides[cur].classList.add("on"); dots.children[cur].classList.add("on"); }
+function restart(){ clearInterval(timer); timer=setInterval(()=>show((cur+1)%slides.length),5000); }
+show(0); restart();
+
+// phone menu
+const nav=document.getElementById("nav"), burger=document.getElementById("burger");
+burger.onclick=()=>{ const o=nav.classList.toggle("open"); burger.setAttribute("aria-expanded",o); burger.textContent=o?"Close":"Menu"; };
+nav.addEventListener("click",e=>{ if(e.target.closest("a")){ nav.classList.remove("open"); burger.setAttribute("aria-expanded",false); burger.textContent="Menu"; } });
+
+// numbers count up when they come into view
+const fmt=n=>n.toLocaleString("en-US");
+const io=new IntersectionObserver(es=>es.forEach(e=>{ if(!e.isIntersecting) return; io.unobserve(e.target);
+  const el=e.target, to=+el.dataset.to, sfx=el.dataset.suffix||"", t0=performance.now();
+  const step=t=>{ const p=Math.min(1,(t-t0)/1400); el.textContent=fmt(Math.round(to*(1-Math.pow(1-p,3))))+(p===1?sfx:""); if(p<1) requestAnimationFrame(step); };
+  requestAnimationFrame(step); setTimeout(()=>{ el.textContent=fmt(to)+sfx; },1600); }),{threshold:.4}); // the timeout makes sure the final number always shows
+document.querySelectorAll(".num b").forEach(el=>io.observe(el));
+document.getElementById("yr").textContent=new Date().getFullYear();
+</script>
+</body></html>

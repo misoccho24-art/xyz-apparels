@@ -1,0 +1,42 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Order - XYZ Apparels Ltd</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css"></head><body>
+<div class="top"><div class="topbar"><a class="brand" href="index.html">XYZ <b>Apparels</b></a><div class="nav"><a href="index.html">Home</a><a href="orders.html">Orders</a><a href="admin.html">Admin Panel</a></div></div></div>
+<main><a class="back" href="orders.html">&larr; All orders</a>
+<div class="printhead" id="ph"></div>
+<div class="eyebrow">Order Details</div><h1 class="otitle" id="t"></h1>
+<div class="osub" id="sub" hidden></div>
+<div class="onote" id="note" hidden></div>
+<div class="datepill dark" id="dp" hidden></div>
+<div class="chips" id="chips"></div>
+<div class="otools"><input id="f" type="search" placeholder="Filter designs in this order..." autocomplete="off"><button class="btn sec" id="print" style="margin:0">Print / PDF</button></div>
+<div class="wrap"><table><thead><tr><th class="name">Design</th><th>Name</th><th>Image</th><th>Quantity</th><th>Cutting</th><th>Print</th><th>Sewing</th><th>Finishing</th></tr></thead><tbody id="b"></tbody><tfoot id="tf"></tfoot></table></div></main>
+<script src="sheets-config.js"></script>
+<script src="app.js"></script><script>start("viewer",()=>{
+const n=+new URLSearchParams(location.search).get("o")||1, focusD=+new URLSearchParams(location.search).get("d")||0, o=ORDERS.find(x=>x.id===n)||ORDERS[0], d=load();
+const $=id=>document.getElementById(id), title=(d._titles&&d._titles[o.id])||"", note=(d._notes&&d._notes[o.id])||"", upd=(d._updated&&d._updated[o.id])||"";
+$("t").textContent="Order "+o.id;
+const prods=(d._products&&d._products[o.id])||"";
+$("sub").hidden=!(title||prods); $("sub").innerHTML=(title?`<span class="nm">${esc(title)}</span>`:"")+pcBadge(prods);
+$("note").hidden=!note; $("note").textContent=note;
+const dp=$("dp"); if(d._dates&&d._dates[o.id]){ dp.textContent="Date: "+fmtDate(d._dates[o.id]); dp.hidden=false; } else dp.hidden=true;
+const st=orderStats(d,o);
+$("chips").innerHTML=`<div class="chip">Designs<b>${st.designs}</b></div><div class="chip">Total quantity<b>${fmtNum(st.qty)}</b></div>`+(upd?`<div class="chip">Last updated<b>${esc(fmtWhen(upd))}</b></div>`:"");
+$("ph").innerHTML=`<div class="ph-co">${esc(COMPANY)}</div><div class="ph-t">Order ${o.id}${title?" &mdash; "+esc(title):""}</div>`+
+  (dp.hidden?"":`<div>${esc(dp.textContent)}</div>`)+(note?`<div>${esc(note)}</div>`:"")+`<div class="ph-d">Printed ${esc(fmtWhen(new Date().toISOString()))}</div>`;
+let h="";
+for(let i=1;i<=st.designs;i++){ const r=getRow(d,o.id,i);
+  h+=`<tr data-i="${i}"><td class="name" data-label="Design">Design ${i}</td><td class="pname" data-label="Name">${(r.name||r.products)?`<span class="pn-wrap">${r.name?`<span class="nm">${esc(r.name)}</span>`:""}${pcBadge(r.products)}</span>`:'<span class="empty">&mdash;</span>'}</td><td data-label="Image">${r.img?`<img class="thumb" src="${r.img}" alt="Design ${i}">`:'<div class="ph">&#9707;</div>'}</td>`+
+  COLS.map(c=>`<td data-label="${c[1]}">${r[c[0]]?esc(r[c[0]]):'<span class="empty">&mdash;</span>'}</td>`).join("")+`</tr>`; }
+$("b").innerHTML=h||'<tr><td colspan="8" style="height:120px;color:#5f6f8c">No designs added yet</td></tr>';
+$("tf").innerHTML=st.designs?`<tr class="tot"><td class="name" colspan="3">Total</td>`+COLS.map(c=>`<td data-label="${c[1]}">${fmtNum(st[c[0]])}</td>`).join("")+`</tr>`:"";
+$("b").onclick=e=>{
+  const t=e.target.closest(".thumb,.ph"); if(!t)return;
+  Viewer.open({edit:false,count:()=>designCount(d,o),get:i=>getRow(d,o.id,i)},+t.closest("tr").dataset.i);
+};
+const f=$("f");
+function applyFilter(){ const t=f.value.trim().toLowerCase(); [...$("b").rows].forEach(r=>{ r.hidden=!!t&&!r.innerText.toLowerCase().includes(t); }); }
+f.oninput=applyFilter; applyFilter();
+$("print").onclick=()=>window.print();
+if(focusD){ const r=$("b").querySelector('tr[data-i="'+focusD+'"]'); if(r){ r.classList.add("flash"); setTimeout(()=>r.scrollIntoView({block:"center"}),50); } }
+});</script></body></html>

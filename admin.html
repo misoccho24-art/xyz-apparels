@@ -1,0 +1,165 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Panel - XYZ Apparels Ltd</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet"><link rel="stylesheet" href="style.css"></head><body>
+<div class="top"><div class="topbar"><a class="brand" href="index.html">XYZ <b>Apparels</b></a><div class="nav"><a href="index.html">Home</a><a href="orders.html">Orders</a></div></div>
+<section class="hero"><div class="eyebrow">Admin Panel</div><h1>Manage Orders</h1><div class="rule"></div></section></div>
+<main>
+<div class="tabs" id="tabs"></div>
+<div class="ocard"><div class="oc-h" id="och">Order details</div>
+<div class="oc-grid"><div class="of"><label for="dt">Date</label><input type="date" id="dt"></div>
+<div class="of grow"><label for="ttl">Order name / buyer / PO number</label><input id="ttl" maxlength="80" placeholder="e.g. Buyer ABC - PO 1234" autocomplete="off"></div>
+<div class="of"><label for="opc">Products</label><input id="opc" maxlength="12" inputmode="numeric" placeholder="e.g. 250" autocomplete="off" style="width:120px"></div>
+<div class="of full"><label for="nt">Note (optional)</label><textarea id="nt" rows="2" maxlength="300" placeholder="Anything worth knowing about this order"></textarea></div></div></div>
+<div class="toolbar"><button class="btn sec" id="binb" style="margin-left:0">Recycle bin</button><button class="btn sec" id="histb" style="margin-left:0">Version history</button>
+<button class="btn sec" id="bk" style="margin-left:0">Download backup</button><button class="btn sec" id="rb" style="margin-left:0">Restore from backup</button><button class="btn sec" id="csv" style="margin-left:0">Export to Excel (CSV)</button></div>
+<div class="note" style="margin-bottom:12px">Click any image to view or edit it. You can also <b>drag pictures onto the table</b> to add them as new designs. Press Save when you are done.</div>
+<div class="addrow"><button class="btn sec add" id="add" style="margin-left:0">+ Add design</button><button class="btn sec add" id="addpics" style="margin-left:0">Add designs from pictures</button></div>
+<div class="wrap" id="wrap"><table><thead><tr><th class="name">Design</th><th>Name</th><th>Products</th><th>Image</th><th>Quantity</th><th>Cutting</th><th>Print</th><th>Sewing</th><th>Finishing</th><th></th></tr></thead><tbody id="b"></tbody></table></div>
+<div class="savebar"><span class="status" id="st">All changes saved</span><button class="btn lg" id="save">Save</button></div></main>
+<input type="file" id="file" accept="image/*" hidden><input type="file" id="multi" accept="image/*" multiple hidden><input type="file" id="bkfile" accept=".json,application/json" hidden>
+<script src="sheets-config.js"></script>
+<script src="app.js"></script><script>start("admin",()=>{
+const $=id=>document.getElementById(id);
+const tabs=$("tabs"), dt=$("dt"), ttl=$("ttl"), nt=$("nt"), opc=$("opc"), fi=$("file"), st=$("st");
+let flash=new Set(), cur=1, target=null, draft=clone(load()), dirty=false;
+function drawTabs(){ tabs.innerHTML=ORDERS.map(o=>`<button class="tab ${o.id===cur?"on":""}" data-o="${o.id}">Order ${o.id}</button>`).join("")+'<button class="tab add" data-add="1">+ Add order</button>'+(ORDERS.length>1?'<button class="tab del" data-del="1">&minus; Remove last order</button>':''); }
+tabs.onclick=async e=>{ const b=e.target.closest(".tab"); if(!b)return;
+  if(b.dataset.del){
+    const last=ORDERS.length; if(last<=1)return;
+    const n=designCount(draft,ORDERS[last-1]), hasInfo=!!((draft._dates&&draft._dates[last])||(draft._titles&&draft._titles[last])||(draft._notes&&draft._notes[last])||(draft._products&&draft._products[last]));
+    if(n>0||hasInfo){ if(!(await confirmBox("Remove Order "+last+"?"+(n?" Its "+n+" design"+(n>1?"s":"")+" will be deleted.":"")))) return; }
+    for(let k=1;k<=n;k++){ const r=getRow(draft,last,k); if(Object.keys(r).length) (draft._bin=draft._bin||[]).push(Object.assign({o:last,i:k},clone(cleanRow(r)))); }
+    delete draft[last]; ["_n","_dates","_titles","_notes","_products"].forEach(k=>{ if(draft[k]) delete draft[k][last]; });
+    setOrderCount(last-1); if(cur>ORDERS.length) cur=ORDERS.length;
+    mark(true); drawTabs(); showDate(); render(); return;
+  }
+  if(b.dataset.add){ if(ORDERS.length>=200)return; setOrderCount(ORDERS.length+1); cur=ORDERS.length; mark(true); drawTabs(); showDate(); render(); return; }
+  flash.clear(); cur=+b.dataset.o; drawTabs(); showDate(); render(); };
+function showDate(){
+  dt.value=(draft._dates&&draft._dates[cur])||""; ttl.value=(draft._titles&&draft._titles[cur])||""; nt.value=(draft._notes&&draft._notes[cur])||""; opc.value=(draft._products&&draft._products[cur])||"";
+  $("och").textContent="Order "+cur+" details";
+}
+function setMeta(key,v){ draft[key]=draft[key]||{}; if(String(v).trim()) draft[key][cur]=v; else delete draft[key][cur]; mark(true); }
+dt.oninput=()=>setMeta("_dates",dt.value); ttl.oninput=()=>setMeta("_titles",ttl.value); nt.oninput=()=>setMeta("_notes",nt.value); opc.oninput=()=>setMeta("_products",opc.value.trim());
+showDate(); drawTabs();
+window.__dirty=()=>dirty;
+function mark(v){dirty=v;st.textContent=v?"Unsaved changes":"All changes saved";st.className="status "+(v?"dirty":"");}
+function row(i){draft[cur]=draft[cur]||{};draft[cur][i]=draft[cur][i]||{};return draft[cur][i];}
+function setF(i,f,v){const r=row(i); if(v) r[f]=v; else delete r[f]; mark(true);}
+function render(){
+  const o=ORDERS.find(x=>x.id===cur); let h="";
+  for(let i=1;i<=designCount(draft,o);i++){ const r=getRow(draft,cur,i);
+    h+=`<tr data-i="${i}"${flash.has(cur+"_"+i)?' class="flash"':""}><td class="name" data-label="Design">Design ${i}</td><td data-label="Name"><input class="cell name-in" placeholder="Product name" value="${esc(r.name)}" oninput="setF(${i},'name',this.value.trim())"></td><td data-label="Products"><input class="cell pc-in" inputmode="numeric" placeholder="0" value="${esc(r.products)}" oninput="setF(${i},'products',this.value.trim())"></td><td data-label="Image">${r.img?`<img class="thumb" src="${r.img}">`:'<div class="ph">&#9707;</div>'}
+    <div class="btns"><button class="btn" onclick="up(${i})">${r.img?"Replace":"Upload"}</button>${r.img?`<button class="btn sec" onclick="rm(${i})">Remove</button>`:""}</div></td>`+
+    COLS.map(c=>`<td data-label="${c[1]}"><input class="cell" value="${esc(r[c[0]])}" oninput="setF(${i},'${c[0]}',this.value.trim())"></td>`).join("")+`<td class="act"><button class="btn sec del" onclick="delD(${i})">Delete</button></td></tr>`; }
+  $("b").innerHTML=h||'<tr><td colspan="10" style="height:120px;color:#5f6f8c">No designs yet - press "+ Add design" or drag pictures here</td></tr>';
+}
+async function delD(i){
+  const o=ORDERS.find(x=>x.id===cur), n=designCount(draft,o);
+  const has=Object.keys(getRow(draft,cur,i)).length>0;
+  const binRow=()=>{ if(has) (draft._bin=draft._bin||[]).push(Object.assign({o:cur,i},clone(cleanRow(getRow(draft,cur,i))))); };
+  if(has && !(await confirmBox("Do you really want to delete this design?")))return false;
+  binRow();
+  const rows=draft[cur]=draft[cur]||{};
+  for(let k=i;k<n;k++){ if(rows[k+1]) rows[k]=rows[k+1]; else delete rows[k]; }
+  delete rows[n]; draft._n=draft._n||{}; draft._n[cur]=n-1; mark(true); render(); return true;
+}
+function up(i){target=i;fi.value="";fi.click()}
+function rm(i){setF(i,"img","");render()}
+fi.onchange=async()=>{ if(!fi.files[0])return; setF(target,"img",await readImage(fi.files[0])); render(); };
+$("add").onclick=()=>{const o=ORDERS.find(x=>x.id===cur); draft._n=draft._n||{}; draft._n[cur]=designCount(draft,o)+1; mark(true); render();
+  const w=$("wrap"); w.scrollTop=w.scrollHeight;};
+$("save").onclick=()=>doSave();
+window.onbeforeunload=e=>{ if(dirty){e.preventDefault();e.returnValue="";} };
+async function doSave(){
+  const b=$("save"); b.disabled=true; b.textContent="Saving...";
+  const ok=await save(draft); b.disabled=false; b.textContent="Save";
+  if(ok){ flash.clear(); draft=load(); showDate(); render(); st.textContent="Saved"; st.className="status ok"; dirty=false; }
+  return ok;
+}
+$("b").addEventListener("click",e=>{
+  const t=e.target.closest(".thumb,.ph"); if(!t)return;
+  Viewer.open({edit:true,count:()=>designCount(draft,ORDERS.find(x=>x.id===cur)),get:i=>getRow(draft,cur,i),
+    setField:(i,k,v)=>setF(i,k,v),setImage:(i,v)=>setF(i,"img",v),remove:delD,save:doSave,dirty:()=>dirty,onClose:render},+t.closest("tr").dataset.i);
+});
+
+// ---- add many designs from pictures (button or drag & drop)
+async function addFromFiles(files){
+  files=files.filter(f=>/^image\//.test(f.type));
+  if(!files.length){ alert("Please choose picture files."); return; }
+  if(files.length>100){ alert("Up to 100 pictures at a time. The first 100 will be added."); files=files.slice(0,100); }
+  const o=ORDERS.find(x=>x.id===cur); let n=designCount(draft,o);
+  const c=chip("Adding pictures... 0/"+files.length);
+  for(let k=0;k<files.length;k++){
+    try{
+      const img=await readImage(files[k]); n++; draft._n=draft._n||{}; draft._n[cur]=n;
+      const r=row(n); r.img=img;
+      const nm=files[k].name.replace(/\.[^.]+$/,"").replace(/[_-]+/g," ").trim(); if(nm) r.name=nm;
+    }catch(e){}
+    c.textContent="Adding pictures... "+(k+1)+"/"+files.length;
+  }
+  c.remove(); mark(true); render(); const w=$("wrap"); w.scrollTop=w.scrollHeight;
+}
+$("addpics").onclick=()=>{ $("multi").value=""; $("multi").click(); };
+$("multi").onchange=()=>addFromFiles([...$("multi").files]);
+const wrap=$("wrap"), hasFiles=e=>e.dataTransfer&&[...e.dataTransfer.types].includes("Files");
+["dragenter","dragover"].forEach(ev=>wrap.addEventListener(ev,e=>{ if(hasFiles(e)){ e.preventDefault(); wrap.classList.add("drop"); } }));
+["dragleave","drop"].forEach(ev=>wrap.addEventListener(ev,()=>wrap.classList.remove("drop")));
+wrap.addEventListener("drop",e=>{ if(hasFiles(e)){ e.preventDefault(); addFromFiles([...e.dataTransfer.files]); } });
+window.addEventListener("dragover",e=>{ if(hasFiles(e)) e.preventDefault(); });
+window.addEventListener("drop",e=>{ if(hasFiles(e)) e.preventDefault(); });
+
+// ---- backup / restore / export
+const today=()=>new Date().toISOString().slice(0,10);
+function download(name,text,type){ const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([text],{type})); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1500); }
+$("bk").onclick=()=>{
+  if(dirty && !confirm("You have unsaved changes. They will NOT be in this backup. Continue?")) return;
+  const s=load(), out={app:"xyz-orders",version:2,exportedAt:new Date().toISOString(),orderCount:ORDERS.length,orders:[]};
+  ORDERS.forEach(o=>{
+    const n=designCount(s,o), ds=[];
+    for(let i=1;i<=n;i++){ const r=getRow(s,o.id,i), x={}; ["name","products","qty","cutting","print","sewing","finishing","img"].forEach(k=>{ if(r[k]) x[k]=r[k]; }); ds.push(x); }
+    out.orders.push({id:o.id,date:(s._dates||{})[o.id]||"",name:(s._titles||{})[o.id]||"",note:(s._notes||{})[o.id]||"",products:(s._products||{})[o.id]||"",designs:ds});
+  });
+  download("xyz-orders-backup-"+today()+".json",JSON.stringify(out),"application/json");
+};
+$("rb").onclick=()=>{ if(dirty){ alert("Please press Save first, then restore from a backup."); return; } $("bkfile").value=""; $("bkfile").click(); };
+$("bkfile").onchange=async()=>{
+  const f=$("bkfile").files[0]; if(!f) return;
+  let b; try{ b=JSON.parse(await f.text()); }catch(e){ alert("That file is not a valid backup."); return; }
+  if(!b||b.app!=="xyz-orders"||!Array.isArray(b.orders)){ alert("That file is not an XYZ Orders backup."); return; }
+  const nd=b.orders.reduce((a,o)=>a+((o.designs||[]).length),0);
+  if(!(await confirmBox("Replace ALL current data with this backup?","Load backup","The backup has "+b.orders.length+" orders and "+nd+" designs. Nothing is changed until you press Save, and your current data is stored in Version history first, so you can undo it."))) return;
+  setOrderCount(b.orderCount||b.orders.length||6);
+  const n2={_n:{},_dates:{},_titles:{},_notes:{},_products:{}};
+  b.orders.forEach(o=>{
+    if(!(o.id>=1&&o.id<=ORDERS.length)) return;
+    const ds=o.designs||[]; n2[o.id]={}; ds.forEach((x,k)=>{ n2[o.id][k+1]=Object.assign({},x); }); n2._n[o.id]=ds.length;
+    if(o.date) n2._dates[o.id]=o.date; if(o.name) n2._titles[o.id]=o.name; if(o.note) n2._notes[o.id]=o.note; if(o.products) n2._products[o.id]=o.products;
+  });
+  draft=n2; cur=1; flash.clear(); drawTabs(); showDate(); render(); mark(true);
+};
+$("csv").onclick=()=>{
+  const s=load(), q=v=>'"'+String(v==null?"":v).replace(/"/g,'""')+'"', safe=v=>/^[=+\-@]/.test(String(v||""))?"'"+v:(v||"");
+  const rows=[["Order","Order name","Order products","Date","Design","Name","Products","Quantity","Cutting","Print","Sewing","Finishing"]];
+  ORDERS.forEach(o=>{ const n=designCount(s,o);
+    for(let i=1;i<=n;i++){ const r=getRow(s,o.id,i); rows.push([o.id,safe((s._titles||{})[o.id]),(s._products||{})[o.id]||"",(s._dates||{})[o.id]||"",i,safe(r.name),r.products||"",r.qty||"",r.cutting||"",r.print||"",r.sewing||"",r.finishing||""]); } });
+  download("xyz-orders-"+today()+".csv","﻿"+rows.map(r=>r.map(q).join(",")).join("\r\n"),"text/csv;charset=utf-8");
+};
+
+// ---- recovery
+const afterRecovery=async(res)=>{
+  const before=load();
+  if(res&&res.rows) await applyLoad(res); else await loadAll();
+  draft=load();
+  const sum=diffData(before,draft);
+  flash=new Set([...sum.added,...sum.changed].map(x=>x.o+"_"+x.i));
+  const first=sum.added[0]||sum.changed[0]||sum.removed[0];
+  cur=first?Math.min(first.o,ORDERS.length):Math.min(cur,ORDERS.length);
+  drawTabs(); showDate(); render(); mark(false);
+  return sum;
+};
+$("binb").onclick=()=>{ if(dirty){ alert("Please press Save first, then open the Recycle bin."); return; } openBin(afterRecovery); };
+$("histb").onclick=()=>{ if(dirty){ alert("Please press Save first, then open Version history."); return; } openHistory(afterRecovery); };
+Object.assign(window,{up,rm,delD,setF});
+render();
+});</script></body></html>
