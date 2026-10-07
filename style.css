@@ -379,23 +379,35 @@ tr.flash td{background:#fff3b0}
 .wrap.drop{outline:3px dashed #2563eb;outline-offset:-6px;background:#eaf2ff}
 .toolbar{gap:10px}
 
-/* ===== phones: tables become one card per design ===== */
+/* ===== phones: one compact card per design (small picture, numbers in one row) ===== */
 @media(max-width:760px){
   .wrap{overflow:visible;border:0;background:none;box-shadow:none;max-height:none}
-  table,thead,tbody,tfoot,tr,td{display:block;width:100%;min-width:0}
+  table,thead,tbody,tfoot{display:block;width:100%;min-width:0}
   thead{display:none}
-  tbody tr,tfoot tr{background:#fff;border:1px solid var(--line);border-radius:16px;margin:0 0 12px;padding:6px 12px;box-shadow:0 4px 14px rgba(37,99,235,.08)}
+  tbody tr,tfoot tr{display:grid;grid-template-columns:64px repeat(4,1fr);column-gap:8px;row-gap:4px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;margin:0 0 10px;padding:10px;box-shadow:0 3px 10px rgba(37,99,235,.07)}
   tbody tr:nth-child(even){background:#fff}
-  td{display:flex;justify-content:space-between;align-items:center;gap:12px;border:0;padding:8px 2px;text-align:right;height:auto}
-  td::before{content:attr(data-label);color:var(--mute);font-size:11px;letter-spacing:.1em;text-transform:uppercase;text-align:left;flex:none}
-  td.name{font-size:17px;padding-left:2px}
-  td.name::before{content:"";}
-  td.pname{max-width:none}
-  td .btns{justify-content:flex-end}
-  td.act{justify-content:flex-end}td.act::before{content:""}
-  input.cell,.cell.name-in{width:150px}
-  tfoot td.name{justify-content:flex-start}
-  tfoot td[colspan]{display:flex}
+  tbody tr:hover{background:#fff}
+  td{display:block;border:0;padding:0;height:auto;text-align:left;min-width:0}
+  td.name{grid-column:2/-1;grid-row:1;font-size:15px;font-weight:700;padding:0;white-space:normal}
+  td[data-label="Name"]{grid-column:2/-1;grid-row:2;max-width:none}
+  td[data-label="Products"]{grid-column:2/4;grid-row:3;display:flex;align-items:center;gap:8px}
+  td[data-label="Products"]::before{content:"Products";font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+  td[data-label="Image"]{grid-column:1;grid-row:1/span 3;align-self:start}
+  td[data-label="Image"] .thumb,td[data-label="Image"] .ph{width:64px;height:64px;margin:0}
+  td[data-label="Image"] .btns{display:none}
+  td[data-label="Qty"]{grid-column:1}td[data-label="Cutting"]{grid-column:2}td[data-label="Print"]{grid-column:3}td[data-label="Sewing"]{grid-column:4}td[data-label="Finishing"]{grid-column:5}
+  td[data-label="Qty"],td[data-label="Cutting"],td[data-label="Print"],td[data-label="Sewing"],td[data-label="Finishing"]{grid-row:4;text-align:center;margin-top:6px;padding-top:6px;border-top:1px solid var(--line);font-weight:600;font-size:14px}
+  td[data-label="Qty"]::before,td[data-label="Cutting"]::before,td[data-label="Print"]::before,td[data-label="Sewing"]::before,td[data-label="Finishing"]::before{content:attr(data-label);display:block;font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);font-weight:600;margin-bottom:3px}
+  td input.cell,td .cell.name-in{width:100%;padding:7px 4px;font-size:13px}
+  td .cell.name-in{text-align:left;padding-left:8px}
+  td input.cell.pc-in{width:70px}
+  td.act{grid-column:4/-1;grid-row:3;text-align:right}
+  td.act .btn.sec.del{padding:7px 14px;font-size:13px}
+  td.pname .pn-wrap{gap:4px 10px}
+  tfoot tr{background:#eef4ff}
+  tfoot td{border:0!important;background:none!important}
+  tfoot td.name{grid-column:1/-1;grid-row:1}
+  tfoot td[data-label="Qty"],tfoot td[data-label="Cutting"],tfoot td[data-label="Print"],tfoot td[data-label="Sewing"],tfoot td[data-label="Finishing"]{grid-row:2;margin-top:0;border-top:0}
   .tabs{flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px}
   .tab{flex:none}
   .topbar{padding:14px 16px}
@@ -433,23 +445,10 @@ input.cell.pc-in{width:64px}
 .datepill.dark{font-size:12px;padding:5px 12px;margin-bottom:16px}
 .cdate{font-size:11px;padding:4px 10px;margin-top:10px}
 
-/* ===== phones: the picture is the highlight of each card ===== */
+/* phones: picture viewer fields stack */
 @media(max-width:760px){
-  tbody tr{display:flex;flex-direction:column;padding:12px 12px 6px}
-  tbody td[data-label="Image"]{order:-1;display:block;padding:0 0 6px;text-align:center}
-  tbody td[data-label="Image"]::before{content:none}
-  tbody td[data-label="Image"] .thumb,tbody td[data-label="Image"] .ph{width:100%;height:auto;aspect-ratio:4/3;max-height:340px;border-radius:12px;border:0;box-shadow:none;background:#eef4ff}
-  tbody td[data-label="Image"] .thumb{object-fit:contain}
-  tbody td[data-label="Image"] .ph{font-size:34px}
-  tbody td[data-label="Image"] .btns{margin-top:8px}
-  .pn-wrap{justify-content:flex-end}
-  tbody td.name{justify-content:flex-start;font-weight:700}
   .vw-namerow{flex-direction:column}
   .vw-namerow .vw-pc{flex:none}
-  /* home page: big 2x2 pictures */
-  .thumbs{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:none}
-  .thumbs img,.thumbs .more{width:100%;height:auto;aspect-ratio:1;font-size:20px}
-  .card .go{top:26px;bottom:auto}
 }
 
 /* ===== order-level product count (home box + order page) ===== */
@@ -473,10 +472,6 @@ input.cell.pc-in{width:64px}
 .thumbs .moreimg{position:relative;width:46px;height:46px;border-radius:10px;overflow:hidden;border:2px solid rgba(255,255,255,.9)}
 .thumbs .moreimg img{width:100%;height:100%;border:0;border-radius:0;display:block;animation:none}
 .thumbs .moreimg span{position:absolute;inset:0;display:grid;place-items:center;background:rgba(15,30,80,.55);color:#fff;font-weight:700;font-size:14px}
-@media(max-width:760px){
-  .thumbs .moreimg{width:100%;height:auto;aspect-ratio:1}
-  .thumbs .moreimg span{font-size:24px}
-}
 /* add-design buttons sit above the table */
 .addrow{margin:0 0 12px}
 .addrow .btn.add{margin-top:0}
