@@ -27,11 +27,11 @@ nav a.cta:hover{background:var(--deep);color:#fff}
 .navc{display:flex;flex-direction:column;gap:2px;padding-left:22px;border-left:2px solid var(--line)}
 .navc a{text-transform:none;letter-spacing:.02em;font-size:13px;color:var(--blue)}
 .navc a:hover{color:var(--deep)}
-.mcontact{display:none}
-@media(max-width:900px){
-  .mcontact{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 18px;padding:7px 16px;background:var(--blue);font-size:13px;font-weight:700}
-  .mcontact a{color:#fff;text-decoration:none;white-space:nowrap}
-}
+.mcontact{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 28px;padding:8px 16px;background:var(--blue);color:#dbeafe;font-size:13px;font-weight:700}
+.mcontact span{white-space:nowrap}
+.mcontact a{color:#fff;text-decoration:none}
+.mcontact a:hover{text-decoration:underline}
+@media(max-width:600px){.mcontact{gap:2px 18px;font-size:12px;padding:7px 12px}}
 @media(max-width:1180px) and (min-width:901px){nav{gap:18px}nav a{letter-spacing:.06em}}
 .burger{display:none;border:1px solid var(--line);background:#fff;border-radius:8px;padding:9px 12px;font-size:13px;font-weight:700;color:var(--blue);cursor:pointer}
 
@@ -229,13 +229,12 @@ a.card:hover{border-color:var(--blue)}
 
 
 <header>
-<div class="mcontact"><a href="tel:+8801819550355">01819-550355</a><a href="mailto:sakibapparelsltd@gmail.com">sakibapparelsltd@gmail.com</a></div>
+<div class="mcontact"><span>Phone : <a href="tel:+8801819550355">01819-550355</a></span><span>Email : <a href="mailto:sakibapparelsltd@gmail.com">sakibapparelsltd@gmail.com</a></span></div>
 <div class="wrap">
   <a class="logo" href="#top">Sakib Apparels Ltd.</a>
   <button class="burger" id="burger" aria-expanded="false" aria-controls="nav">Menu</button>
   <nav id="nav">
     <a href="#top">Home</a><a href="#about">About Us</a><a href="#products">Products</a><a href="#clients">Clients</a><a href="#contact">Contact</a>
-    <span class="navc"><a href="tel:+8801819550355">01819-550355</a><a href="mailto:sakibapparelsltd@gmail.com">sakibapparelsltd@gmail.com</a></span>
 
   </nav>
 </div>
