@@ -45,12 +45,12 @@ showDate(); drawTabs();
 window.__dirty=()=>dirty;
 function mark(v){dirty=v;st.textContent=v?"Unsaved changes":"All changes saved";st.className="status "+(v?"dirty":"");}
 function row(i){draft[cur]=draft[cur]||{};draft[cur][i]=draft[cur][i]||{};return draft[cur][i];}
-function setF(i,f,v){const r=row(i); if(v) r[f]=v; else delete r[f]; mark(true);}
+function setF(i,f,v){const r=row(i); if(f==="img") delete r.imgId; if(v) r[f]=v; else delete r[f]; mark(true);}
 function render(){
   const o=ORDERS.find(x=>x.id===cur); let h="";
   for(let i=1;i<=designCount(draft,o);i++){ const r=getRow(draft,cur,i);
-    h+=`<tr data-i="${i}"${flash.has(cur+"_"+i)?' class="flash"':""}><td class="name" data-label="Design">Design ${i}</td><td data-label="Name"><input class="cell name-in" placeholder="Product name" value="${esc(r.name)}" oninput="setF(${i},'name',this.value.trim())"></td><td data-label="Products"><input class="cell pc-in" inputmode="numeric" placeholder="0" value="${esc(r.products)}" oninput="setF(${i},'products',this.value.trim())"></td><td data-label="Image">${r.img?`<img class="thumb" src="${r.img}">`:'<div class="ph">&#9707;</div>'}
-    <div class="btns"><button class="btn" onclick="up(${i})">${r.img?"Replace":"Upload"}</button>${r.img?`<button class="btn sec" onclick="rm(${i})">Remove</button>`:""}</div></td>`+
+    h+=`<tr data-i="${i}"${flash.has(cur+"_"+i)?' class="flash"':""}><td class="name" data-label="Design">Design ${i}</td><td data-label="Name"><input class="cell name-in" placeholder="Product name" value="${esc(r.name)}" oninput="setF(${i},'name',this.value.trim())"></td><td data-label="Products"><input class="cell pc-in" inputmode="numeric" placeholder="0" value="${esc(r.products)}" oninput="setF(${i},'products',this.value.trim())"></td><td data-label="Image">${imgEl(r,"thumb","Design "+i)}
+    <div class="btns"><button class="btn" onclick="up(${i})">${hasImg(r)?"Replace":"Upload"}</button>${hasImg(r)?`<button class="btn sec" onclick="rm(${i})">Remove</button>`:""}</div></td>`+
     COLS.map(c=>`<td data-label="${c[1]}"><input class="cell" value="${esc(r[c[0]])}" oninput="setF(${i},'${c[0]}',this.value.trim())"></td>`).join("")+`<td class="act"><button class="btn sec del" onclick="delD(${i})">Delete</button></td></tr>`; }
   $("b").innerHTML=h||'<tr><td colspan="10" style="height:120px;color:#5f6f8c">No designs yet - press "+ Add design" or drag pictures here</td></tr>';
 }
@@ -112,12 +112,13 @@ window.addEventListener("drop",e=>{ if(hasFiles(e)) e.preventDefault(); });
 // ---- backup / restore / export
 const today=()=>new Date().toISOString().slice(0,10);
 function download(name,text,type){ const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([text],{type})); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1500); }
-$("bk").onclick=()=>{
+$("bk").onclick=async()=>{
   if(dirty && !confirm("You have unsaved changes. They will NOT be in this backup. Continue?")) return;
+  const c=chip("Preparing backup..."); await IMG_READY; c.remove(); // every picture goes into the backup
   const s=load(), out={app:"xyz-orders",version:2,exportedAt:new Date().toISOString(),orderCount:ORDERS.length,orders:[]};
   ORDERS.forEach(o=>{
     const n=designCount(s,o), ds=[];
-    for(let i=1;i<=n;i++){ const r=getRow(s,o.id,i), x={}; ["name","products","qty","cutting","print","sewing","finishing","img"].forEach(k=>{ if(r[k]) x[k]=r[k]; }); ds.push(x); }
+    for(let i=1;i<=n;i++){ const r=getRow(s,o.id,i), x={}; ["name","products","qty","cutting","print","sewing","finishing"].forEach(k=>{ if(r[k]) x[k]=r[k]; }); const im=imgSrc(r); if(im) x.img=im; ds.push(x); }
     out.orders.push({id:o.id,date:(s._dates||{})[o.id]||"",name:(s._titles||{})[o.id]||"",note:(s._notes||{})[o.id]||"",products:(s._products||{})[o.id]||"",designs:ds});
   });
   download("xyz-orders-backup-"+today()+".json",JSON.stringify(out),"application/json");

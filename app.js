@@ -19,11 +19,32 @@ async function api(payload){
 async function pool(items,n,fn){
   let k=0; await Promise.all(Array.from({length:Math.min(n,items.length)},async()=>{ while(k<items.length){ await fn(items[k++]); } }));
 }
+// ---------- pictures: shown from this device's copy at once, the rest arrive in the background ----------
+const IMGS={}, BLANK="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
+let IMG_READY=Promise.resolve();
+function cachedImage(id){ if(IMGS[id]) return IMGS[id]; try{ const c=localStorage.getItem("img_"+id); if(c) return IMGS[id]=c; }catch(e){} return ""; }
+function storeImage(id,data){ IMGS[id]=data; try{ localStorage.setItem("img_"+id,data); }catch(e){}
+  document.querySelectorAll('img[data-img="'+id+'"]').forEach(im=>{ im.src=data; im.classList.remove("imgload"); im.removeAttribute("data-img"); }); }
+function imgSrc(r){ return (r&&(r.img||(r.imgId&&cachedImage(r.imgId))))||""; }
+function hasImg(r){ return !!(r&&(r.img||r.imgId)); }
+// the picture, a loading placeholder, or the "no picture" box
+function imgEl(r,cls,alt,empty){ const src=imgSrc(r);
+  if(src) return '<img class="'+cls+'" src="'+src+'" alt="'+esc(alt)+'">';
+  if(r&&r.imgId) return '<img class="'+cls+' imgload" data-img="'+esc(r.imgId)+'" src="'+BLANK+'" alt="'+esc(alt)+'">';
+  return empty==null?'<div class="ph">&#9707;</div>':empty; }
 async function getImage(id){
-  try{ const c=localStorage.getItem("img_"+id); if(c) return c; }catch(e){}
-  const j=await api({action:"image",id});
-  try{ localStorage.setItem("img_"+id,j.data); }catch(e){}
-  return j.data;
+  const c=cachedImage(id); if(c) return c;
+  const j=await api({action:"image",id}); storeImage(id,j.data); return j.data;
+}
+// fetch every picture this device does not have yet, several per request
+function fetchImages(){
+  const need=[...new Set(Object.keys(CACHE).filter(o=>+o>0).flatMap(o=>Object.values(CACHE[o]).map(r=>r&&r.imgId).filter(id=>id&&!cachedImage(id))))];
+  if(!need.length) return IMG_READY=Promise.resolve();
+  const batches=[]; for(let i=0;i<need.length;i+=6) batches.push(need.slice(i,i+6));
+  return IMG_READY=pool(batches,3,async ids=>{
+    try{ const j=await api({action:"images",ids}); Object.keys(j.images||{}).forEach(id=>storeImage(id,j.images[id])); }
+    catch(e){ for(const id of ids){ try{ await getImage(id); }catch(x){} } } // older server: one picture per request
+  });
 }
 async function loadAll(){ await applyLoad(await api({action:"load"})); }
 async function applyLoad(j){
@@ -33,8 +54,9 @@ async function applyLoad(j){
     const {o,i,...rest}=r; const row=cleanRow(rest);
     (d[o]=d[o]||{})[i]=row; if(row.imgId) withImg.push(row);
   });
-  await pool(withImg,6,async row=>{ try{ row.img=await getImage(row.imgId); }catch(e){} });
+  withImg.forEach(row=>{ const c=cachedImage(row.imgId); if(c) row.img=c; });
   CACHE=d; saveDataCache();
+  fetchImages(); // in the background: the page does not wait for pictures
 }
 // sends only what changed since the last load/save
 async function save(d){
@@ -52,6 +74,7 @@ async function save(d){
         const item={o:o.id,i:+k};
         COLS.forEach(([c])=>{ item[c]=y[c]||""; }); item.name=y.name||""; item.products=y.products||"";
         if(y.img){ const kid=idByData.get(y.img); if(kid) item.imgId=kid; else item.imgData=y.img; }
+        else if(y.imgId) item.imgId=y.imgId; // picture still loading: keep it
         else item.clearImg=true;
         changed.push(item);
       }
@@ -75,6 +98,12 @@ async function tryAuth(pw){
   PASS=pw;
   try{ return (await api({action:"auth"})).role; }catch(e){ PASS=""; throw e; }
 }
+// checks the password and loads the data in a single request
+async function signIn(pw){
+  PASS=pw;
+  try{ const j=await api({action:"load"}); if(!j.role) j.role=(await api({action:"auth"})).role; return j; }
+  catch(e){ PASS=""; throw e; }
+}
 function loginBox(role){
   return new Promise(res=>{
     const e=gate('<div class="brand" style="justify-content:center;color:#1d4ed8;margin-bottom:14px">Sakib <b>Apparels</b></div><h3>'+(role==="admin"?"Admin login":"Enter password")+'</h3><p>'+(role==="admin"?"Enter the admin password to manage orders.":"This page is private. Enter the password you were given.")+'</p><div class="pwbox"><input type="password" id="gp" placeholder="Password" autocomplete="current-password"><button type="button" class="pweye" id="geye" aria-label="Show password" title="Show password">Show</button></div><div class="gate-err" id="ge"></div><button class="btn lg" id="gb">Unlock</button>');
@@ -83,11 +112,11 @@ function loginBox(role){
     const go=async()=>{
       if(!inp.value)return; btn.disabled=true; btn.textContent="Checking...";
       try{
-        const r=await tryAuth(inp.value);
-        if(role==="admin"&&r!=="admin"){ PASS=""; throw new Error("That password cannot open the Admin Panel."); }
-        try{ sessionStorage.setItem("pw",inp.value); }catch(x){}
-        e.remove(); res(r); return;
-      }catch(x){ err.textContent=/attempts|cannot open/.test(x.message)?x.message:(x.message==="Wrong password"?"Wrong password. Please try again.":"Could not connect. Check your internet."); }
+        const j=await signIn(inp.value);
+        if(role==="admin"&&j.role!=="admin"){ PASS=""; throw new Error("That password cannot open the Admin Panel."); }
+        try{ sessionStorage.setItem(role==="admin"?"pwAdmin":"pw",inp.value); }catch(x){}
+        e.remove(); res(j); return;
+      }catch(x){ err.textContent=/attempts|cannot open|are the same/.test(x.message)?x.message:(x.message==="Wrong password"?"Wrong password. Please try again.":"Could not connect. Check your internet."); }
       btn.disabled=false; btn.textContent="Unlock"; inp.select();
     };
     btn.onclick=go; inp.onkeydown=ev=>{ if(ev.key==="Enter")go(); }; inp.focus();
@@ -106,7 +135,7 @@ function loadDataCache(){
     CACHE=c.d; return true; }catch(e){ return false; }
 }
 function doLogout(){
-  try{ sessionStorage.removeItem("pw"); Object.keys(localStorage).filter(k=>k.startsWith("img_")||k===DATA_KEY).forEach(k=>localStorage.removeItem(k)); }catch(x){}
+  try{ sessionStorage.removeItem("pw"); sessionStorage.removeItem("pwAdmin"); Object.keys(localStorage).filter(k=>k.startsWith("img_")||k===DATA_KEY).forEach(k=>localStorage.removeItem(k)); }catch(x){}
   location.reload();
 }
 function addLogout(){
@@ -122,21 +151,20 @@ function chip(text){ const e=document.createElement("div"); e.className="syncchi
 async function start(role,fn){
   if(!SCRIPT_URL||SCRIPT_URL.startsWith("PASTE")){
     gate('<h3>Cloud not set up yet</h3><p>Open <b>SETUP.md</b>, follow the steps, and paste your Web App URL into <b>sheets-config.js</b>.</p>'); return; }
-  let r=null, saved=""; try{ saved=sessionStorage.getItem("pw")||""; }catch(e){}
+  // the Admin Panel only reuses a password typed on the Admin Panel itself
+  let r=null, saved=""; try{ saved=(role==="admin"?sessionStorage.getItem("pwAdmin"):(sessionStorage.getItem("pw")||sessionStorage.getItem("pwAdmin")))||""; }catch(e){}
   // viewers: show the last-seen data at once, then refresh quietly in the background
   if(role!=="admin" && saved && loadDataCache()){
     PASS=saved; addLogout(); watchIdle(); document.body.classList.add("ready"); fn();
     const c=chip("Updating...");
-    try{ await tryAuth(saved); await loadAll(); fn(); c.remove(); }
+    try{ await applyLoad(await signIn(saved)); fn(); c.remove(); }
     catch(e){ if(/password|attempts/i.test(e.message)){ doLogout(); return; } c.textContent="Offline - showing saved data"; setTimeout(()=>c.remove(),4000); }
     return;
   }
   // the page content stays hidden (style.css: body:not(.ready) main) until the password is confirmed
-  if(saved){ const ck=gate('<h3>Checking...</h3><p>One moment</p>'); try{ r=await tryAuth(saved); }catch(e){} ck.remove(); }
-  while(!r||(role==="admin"&&r!=="admin")) r=await loginBox(role);
-  const ld=gate('<h3>Loading...</h3><p>Fetching your orders</p>');
-  try{ await loadAll(); }catch(e){ ld.querySelector(".gate-box").innerHTML='<h3>Could not load data</h3><p>'+(e.message||e)+'</p>'; return; }
-  ld.remove();
+  if(saved){ const ck=gate('<h3>Loading...</h3><p>One moment</p>'); try{ r=await signIn(saved); }catch(e){} ck.remove(); }
+  while(!r||(role==="admin"&&r.role!=="admin")) r=await loginBox(role);
+  await applyLoad(r);
   addLogout(); watchIdle();
   document.body.classList.add("ready");
   fn();
@@ -183,10 +211,8 @@ const Viewer={
   go(d){ const n=this.i+d; if(n<1||n>this.cfg.count())return; this.i=n; this.render(true); },
   render(slide){
     const c=this.cfg, r=c.get(this.i), p=this.el.querySelector(".vw-panel"), ed=c.edit;
-    const img=r.img
-      ? `<img class="vw-img" src="${r.img}" alt="Design ${this.i}">`
-      : `<div class="vw-none">No image yet</div>`;
-    const tools=ed?`<div class="vw-tools"><button class="btn" id="vw-up">${r.img?"Replace image":"Upload image"}</button>${r.img?'<button class="btn sec" id="vw-rm">Remove image</button>':""}${c.remove?'<button class="btn danger" id="vw-del">Delete design</button>':""}</div>`:"";
+    const img=imgEl(r,"vw-img","Design "+this.i,'<div class="vw-none">No image yet</div>');
+    const tools=ed?`<div class="vw-tools"><button class="btn" id="vw-up">${hasImg(r)?"Replace image":"Upload image"}</button>${hasImg(r)?'<button class="btn sec" id="vw-rm">Remove image</button>':""}${c.remove?'<button class="btn danger" id="vw-del">Delete design</button>':""}</div>`:"";
     const fields=COLS.map(([k,l])=>ed
       ?`<label class="vw-f"><span>${l}</span><input class="cell" data-k="${k}" value="${esc(r[k])}"></label>`
       :`<div class="vw-f"><span>${l}</span><strong>${r[k]?esc(r[k]):"&mdash;"}</strong></div>`).join("");

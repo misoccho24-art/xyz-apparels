@@ -16,11 +16,11 @@ const d=load(), q=document.getElementById("q"), res=document.getElementById("res
 const T=id=>(d._titles&&d._titles[id])||"", U=id=>(d._updated&&d._updated[id])||"", P=id=>(d._products&&d._products[id])||"";
 
 grid.innerHTML=ORDERS.map(o=>{
-  const imgs=[]; for(let i=1;i<=designCount(d,o);i++){ const r=getRow(d,o.id,i); if(r.img) imgs.push(r.img); }
+  const imgs=[]; for(let i=1;i<=designCount(d,o);i++){ const r=getRow(d,o.id,i); if(hasImg(r)) imgs.push(r); }
   // 4 pictures at most (a 2x2 grid on phones); with more, the 4th shows "+N" on top of its picture
   const extra=imgs.length-4;
-  const shown=imgs.slice(0,extra>0?3:4).map(s=>`<img src="${s}" alt="">`).join("");
-  const more=extra>0?`<div class="moreimg"><img src="${imgs[3]}" alt=""><span>+${extra}</span></div>`:"";
+  const shown=imgs.slice(0,extra>0?3:4).map(r=>imgEl(r,"","")).join("");
+  const more=extra>0?`<div class="moreimg">${imgEl(imgs[3],"","")}<span>+${extra}</span></div>`:"";
   const nd=designCount(d,o);
   const body=(nd?`<div class="cdesigns"><b>${nd}</b> design${nd===1?"":"s"}</div>`:"")+(imgs.length?`<div class="thumbs">${shown}${more}</div>`:(nd?"":`<div class="empty-note">No designs added yet</div>`));
   return `<a class="card" style="--i:${o.id-1}" href="order.html?o=${o.id}"><span class="shine"></span><div class="no">${String(o.id).padStart(2,"0")}</div><div class="lbl">Order</div>`+
@@ -42,7 +42,7 @@ function search(){
     for(let i=1;i<=designCount(d,o);i++){
       const r=getRow(d,o.id,i);
       if((r.name||"").toLowerCase().includes(t) || ("design "+i)===t){
-        items.push(`<a class="rs" href="order.html?o=${o.id}&d=${i}"><div class="rs-img">${r.img?`<img src="${r.img}" alt="">`:"&#9707;"}</div><div class="rs-info"><b>${r.name?esc(r.name):"Design "+i}</b><small>Order ${o.id}${T(o.id)?" &middot; "+esc(T(o.id)):""} &middot; Design ${i}</small></div></a>`);
+        items.push(`<a class="rs" href="order.html?o=${o.id}&d=${i}"><div class="rs-img">${imgEl(r,"","","&#9707;")}</div><div class="rs-info"><b>${r.name?esc(r.name):"Design "+i}</b><small>Order ${o.id}${T(o.id)?" &middot; "+esc(T(o.id)):""} &middot; Design ${i}</small></div></a>`);
       }
     }
   });

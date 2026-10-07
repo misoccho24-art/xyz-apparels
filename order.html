@@ -26,7 +26,7 @@ $("ph").innerHTML=`<div class="ph-co">${esc(COMPANY)}</div><div class="ph-t">Ord
   (dp.hidden?"":`<div>${esc(dp.textContent)}</div>`)+(note?`<div>${esc(note)}</div>`:"")+`<div class="ph-d">Printed ${esc(fmtWhen(new Date().toISOString()))}</div>`;
 let h="";
 for(let i=1;i<=st.designs;i++){ const r=getRow(d,o.id,i);
-  h+=`<tr data-i="${i}"><td class="name" data-label="Design">Design ${i}</td><td class="pname" data-label="Name">${(r.name||r.products)?`<span class="pn-wrap">${r.name?`<span class="nm">${esc(r.name)}</span>`:""}${pcBadge(r.products)}</span>`:'<span class="empty">&mdash;</span>'}</td><td data-label="Image">${r.img?`<img class="thumb" src="${r.img}" alt="Design ${i}">`:'<div class="ph">&#9707;</div>'}</td>`+
+  h+=`<tr data-i="${i}"><td class="name" data-label="Design">Design ${i}</td><td class="pname" data-label="Name">${(r.name||r.products)?`<span class="pn-wrap">${r.name?`<span class="nm">${esc(r.name)}</span>`:""}${pcBadge(r.products)}</span>`:'<span class="empty">&mdash;</span>'}</td><td data-label="Image">${imgEl(r,"thumb","Design "+i)}</td>`+
   COLS.map(c=>`<td data-label="${c[1]}">${r[c[0]]?esc(r[c[0]]):'<span class="empty">&mdash;</span>'}</td>`).join("")+`</tr>`; }
 $("b").innerHTML=h||'<tr><td colspan="8" style="height:120px;color:#5f6f8c">No designs added yet</td></tr>';
 $("tf").innerHTML=st.designs?`<tr class="tot"><td class="name" colspan="3">Total</td>`+COLS.map(c=>`<td data-label="${c[1]}">${fmtNum(st[c[0]])}</td>`).join("")+`</tr>`:"";

@@ -44,6 +44,10 @@ function roleFor_(pw) {
   const fails = Number(cache.get('fails') || 0);
   if (fails >= 10) throw new Error('Too many wrong attempts. Try again in 15 minutes.');
   const p = PropertiesService.getScriptProperties();
+  // the same value in both would let every viewer into the Admin Panel
+  if (p.getProperty('ADMIN_PASSWORD') && p.getProperty('ADMIN_PASSWORD') === p.getProperty('VIEWER_PASSWORD')) {
+    throw new Error('Admin and viewer passwords are the same. Change one of them in Script properties.');
+  }
   let role = null;
   if (pw && pw === p.getProperty('ADMIN_PASSWORD')) role = 'admin';
   else if (pw && pw === p.getProperty('VIEWER_PASSWORD')) role = 'viewer';
@@ -57,7 +61,8 @@ function handle_(req) {
   const role = roleFor_(req.password);
   switch (req.action) {
     case 'auth':    return { ok: true, role: role };
-    case 'load':    return Object.assign({ ok: true }, readAll_());
+    case 'load':    return Object.assign({ ok: true, role: role }, readAll_()); // role included: no separate login request needed
+    case 'images':  return { ok: true, images: readImages_(req.ids) };
     case 'image':   return { ok: true, data: readImage_(req.id) };
     case 'save':    adminOnly_(role); return writeAll_(req);
     case 'bin':     adminOnly_(role); return { ok: true, items: binList_() };
@@ -175,6 +180,23 @@ function readImage_(id) {
   if (!allowed) throw new Error('Image not found');
   const blob = DriveApp.getFileById(id).getBlob();
   return 'data:' + blob.getContentType() + ';base64,' + Utilities.base64Encode(blob.getBytes());
+}
+
+// several pictures in one request (much faster than one request per picture)
+function readImages_(ids) {
+  ids = (Array.isArray(ids) ? ids : []).slice(0, 12);
+  const allowed = {};
+  designRows_().forEach(r => { if (r[2]) allowed[r[2]] = 1; });
+  trashRows_().forEach(r => { if (r[3]) allowed[r[3]] = 1; });
+  const out = {};
+  ids.forEach(id => {
+    if (!allowed[id]) return;
+    try {
+      const blob = DriveApp.getFileById(id).getBlob();
+      out[id] = 'data:' + blob.getContentType() + ';base64,' + Utilities.base64Encode(blob.getBytes());
+    } catch (e) { /* missing picture: skip it */ }
+  });
+  return out;
 }
 
 // ---------- history (snapshots before every save) ----------
