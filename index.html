@@ -27,6 +27,11 @@ nav a.cta:hover{background:var(--deep);color:#fff}
 .navc{display:flex;flex-direction:column;gap:2px;padding-left:22px;border-left:2px solid var(--line)}
 .navc a{text-transform:none;letter-spacing:.02em;font-size:13px;color:var(--blue)}
 .navc a:hover{color:var(--deep)}
+.mcontact{display:none}
+@media(max-width:900px){
+  .mcontact{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 18px;padding:7px 16px;background:var(--soft);border-top:1px solid var(--line);font-size:13px;font-weight:700}
+  .mcontact a{color:var(--blue);text-decoration:none;white-space:nowrap}
+}
 @media(max-width:1180px) and (min-width:901px){nav{gap:18px}nav a{letter-spacing:.06em}}
 .burger{display:none;border:1px solid var(--line);background:#fff;border-radius:8px;padding:9px 12px;font-size:13px;font-weight:700;color:var(--blue);cursor:pointer}
 
@@ -137,11 +142,12 @@ footer p{font-size:14px;margin:0 0 8px}
 /* phones and tablets */
 @media(max-width:900px){
   .burger{display:block}
-  nav{position:absolute;top:72px;left:0;right:0;background:#fff;flex-direction:column;align-items:stretch;gap:0;border-bottom:1px solid var(--line);display:none;box-shadow:0 14px 24px rgba(30,58,138,.1)}
+  header{position:sticky}
+  nav{position:absolute;top:100%;left:0;right:0;background:#fff;flex-direction:column;align-items:stretch;gap:0;border-bottom:1px solid var(--line);display:none;box-shadow:0 14px 24px rgba(30,58,138,.1)}
   nav.open{display:flex}
   nav a{padding:15px 20px;border-top:1px solid var(--line)}
   nav a.cta{margin:12px 20px 16px;text-align:center}
-  .navc{padding:0;border-left:0;gap:0;background:var(--soft)}
+  .navc{display:none}
   .navc a{font-size:15px;font-weight:700}
   .welcome{grid-template-columns:1fr;gap:40px}
   .welcome .badge{left:12px;bottom:-18px}
@@ -171,7 +177,7 @@ a.card:hover{border-color:var(--blue)}
   .strip .wrap{padding-top:6px;padding-bottom:6px}
   .strip .s-mail{display:none}
   header .wrap{height:60px}
-  nav{top:60px}
+
   .logo{font-size:18px}
   .burger{padding:10px 14px}
   /* hero: photo stays visible, text sits at the bottom on a soft dark fade */
@@ -230,7 +236,9 @@ a.card:hover{border-color:var(--blue)}
     <span class="navc"><a href="tel:+8801819550355">01819-550355</a><a href="mailto:sakibapparelsltd@gmail.com">sakibapparelsltd@gmail.com</a></span>
 
   </nav>
-</div></header>
+</div>
+<div class="mcontact"><a href="tel:+8801819550355">01819-550355</a><a href="mailto:sakibapparelsltd@gmail.com">sakibapparelsltd@gmail.com</a></div>
+</header>
 
 <section class="hero" id="top">
   <div class="slide on" style="background-image:url('images/factory-1.jpg')"></div>
