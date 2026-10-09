@@ -106,7 +106,7 @@ async function signIn(pw){
 }
 function loginBox(role){
   return new Promise(res=>{
-    const e=gate('<div class="brand" style="justify-content:center;color:#1d4ed8;margin-bottom:14px">Sakib <b>Apparels</b></div><h3>'+(role==="admin"?"Admin login":"Enter password")+'</h3><p>'+(role==="admin"?"Enter the admin password to manage orders.":"This page is private. Enter the password you were given.")+'</p><div class="pwbox"><input type="password" id="gp" placeholder="Password" autocomplete="current-password"><button type="button" class="pweye" id="geye" aria-label="Show password" title="Show password">Show</button></div><div class="gate-err" id="ge"></div><button class="btn lg" id="gb">Unlock</button>');
+    const e=gate('<div class="brand" style="justify-content:center;color:#1d4ed8;margin-bottom:14px">Sakib <b>Apparels Ltd.</b></div><h3>'+(role==="admin"?"Admin login":"Enter password")+'</h3><p>'+(role==="admin"?"Enter the admin password to manage orders.":"This page is private. Enter the password you were given.")+'</p><div class="pwbox"><input type="password" id="gp" placeholder="Password" autocomplete="current-password"><button type="button" class="pweye" id="geye" aria-label="Show password" title="Show password">Show</button></div><div class="gate-err" id="ge"></div><button class="btn lg" id="gb">Unlock</button>');
     const inp=e.querySelector("#gp"), err=e.querySelector("#ge"), btn=e.querySelector("#gb"), eye=e.querySelector("#geye");
     eye.onclick=()=>{ const show=inp.type==="password"; inp.type=show?"text":"password"; eye.textContent=show?"Hide":"Show"; eye.setAttribute("aria-label",show?"Hide password":"Show password"); eye.title=eye.getAttribute("aria-label"); inp.focus(); };
     const go=async()=>{

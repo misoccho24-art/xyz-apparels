@@ -225,6 +225,47 @@ a.card:hover{border-color:var(--blue)}
 /* space between the hero heading and the buttons */
 .hero h1{margin-bottom:28px}
 @media(max-width:600px){.hero h1{margin-bottom:22px}}
+
+/* ===== sections added in the editor ===== */
+.csec.bg-white{background:#fff}.csec.bg-soft{background:var(--soft)}
+.csec.bg-blue{background:linear-gradient(120deg,var(--deep),var(--blue));color:#fff}.csec.bg-blue .csec-txt p{color:#e2e8f0}
+.csec-in{display:grid;gap:44px;align-items:center}
+.csec-in.lay-left{grid-template-columns:1fr 1fr}
+.csec-in.lay-right{grid-template-columns:1fr 1fr}.csec-in.lay-right .csec-img{order:2}
+.csec-in.lay-top,.csec-in.lay-bottom{grid-template-columns:1fr;max-width:860px;gap:26px}.csec-in.lay-bottom .csec-img{order:2}
+.csec-in.lay-none{grid-template-columns:1fr;max-width:820px;text-align:center}
+.csec-img img{width:100%;max-height:520px;object-fit:cover;border-radius:14px;box-shadow:0 18px 40px rgba(30,58,138,.18);display:block}
+.csec-in.lay-top .csec-img img,.csec-in.lay-bottom .csec-img img{max-height:440px}
+.csec-txt h2{font-size:clamp(26px,3.4vw,36px);line-height:1.2;margin:0 0 16px}
+.csec-txt p{color:#475569;margin:0 0 14px;white-space:normal;font-size:17px;line-height:1.65}
+@media(max-width:760px){.csec-in.lay-left,.csec-in.lay-right{grid-template-columns:1fr;gap:24px}.csec-in.lay-right .csec-img{order:0}}
+
+/* ===== editing mode (inside link/editor) ===== */
+.site-editing [data-edit]{outline:1px dashed rgba(37,99,235,.45);outline-offset:3px;border-radius:3px;cursor:text;min-width:20px}
+.site-editing [data-edit]:hover{outline:2px dashed #2563eb}
+.site-editing [data-edit]:focus{outline:2px solid #2563eb;background:rgba(219,234,254,.5)}
+.site-editing [data-edit].edited{outline:2px solid #f59e0b;background:rgba(254,243,199,.55)}
+.site-editing .stats [data-edit]:focus,.site-editing .hero [data-edit]:focus,.site-editing .bg-blue [data-edit]:focus{background:rgba(255,255,255,.15)}
+.ed-add{display:flex;justify-content:center;padding:10px 0;background:repeating-linear-gradient(90deg,#cbd5e1 0 8px,transparent 8px 16px) center/100% 2px no-repeat}
+.ed-add button,.ed-tools button{font:700 13px Arial,sans-serif;border-radius:999px;cursor:pointer}
+.ed-add button{background:#fff;color:#2563eb;border:2px solid #2563eb;padding:8px 18px}
+.ed-add button:hover{background:#2563eb;color:#fff}
+section[data-custom]{position:relative}
+.ed-tools{position:absolute;top:10px;right:10px;z-index:5;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.ed-tools button{background:#0f1b33;color:#fff;border:0;padding:8px 14px;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.ed-tools button.del{background:#dc2626}
+.site-editing body > section{position:relative}
+.ed-drag{position:absolute;top:10px;left:10px;z-index:6;font:700 13px Arial,sans-serif;background:#2563eb;color:#fff;border:0;border-radius:999px;padding:8px 14px;cursor:grab;touch-action:none;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.ed-drag:active{cursor:grabbing}
+.ed-dragging{opacity:.45;outline:3px dashed #2563eb;outline-offset:-3px}
+.ed-img{display:block;margin:8px auto 0;font:700 13px Arial,sans-serif;background:#0f1b33;color:#fff;border:0;border-radius:999px;padding:7px 16px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.2);position:relative;z-index:6}
+.ed-img:hover{background:#2563eb}
+.ed-img-hero{position:absolute;left:20px;bottom:56px;margin:0;z-index:7}
+.site-editing .prod .ed-img{margin:8px auto}
+.site-editing .client{flex-wrap:wrap;height:auto;min-height:96px;padding:10px}
+.site-editing .client .ed-img{flex-basis:100%;margin-top:6px;padding:5px 12px;font-size:12px;width:max-content;margin-left:auto;margin-right:auto}
+.site-editing .stack + .ed-img{margin-top:18px}
+.ed-line{position:absolute;left:0;right:0;height:6px;background:#2563eb;border-radius:3px;z-index:60;box-shadow:0 0 0 3px rgba(37,99,235,.25);pointer-events:none}
 </style></head><body>
 
 
@@ -241,30 +282,30 @@ a.card:hover{border-color:var(--blue)}
 </header>
 
 <section class="hero" id="top">
-  <div class="slide on" style="background-image:url('images/factory-1.jpg')"></div>
-  <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1770196009760-bead9eb10514?auto=format&fit=crop&w=1800&q=70')"></div>
-  <div class="slide" style="background-image:url('images/factory-cutting.jpg');background-position:50% 65%"></div>
+  <div data-img-edit="hero.s1" class="slide on" style="background-image:url('images/factory-1.jpg')"></div>
+  <div data-img-edit="hero.s2" class="slide" style="background-image:url('https://images.unsplash.com/photo-1770196009760-bead9eb10514?auto=format&fit=crop&w=1800&q=70')"></div>
+  <div data-img-edit="hero.s3" class="slide" style="background-image:url('images/factory-cutting.jpg');background-position:50% 65%"></div>
   <div class="wrap copy">
-    <h1>Your trusted knitwear manufacturing partner</h1>
-    <div><a class="btn" href="#about">Discover more</a><a class="btn ghost" href="#contact">Contact us</a></div>
+    <h1 data-edit="hero.title">Your trusted knitwear manufacturing partner</h1>
+    <div><a data-edit="hero.btn1" class="btn" href="#about">Discover more</a><a data-edit="hero.btn2" class="btn ghost" href="#contact">Contact us</a></div>
   </div>
   <div class="dots" id="dots"></div>
 </section>
 
 <section class="block" id="about"><div class="wrap welcome">
   <div>
-    <small>About us</small>
-    <h2>Welcome to Sakib Apparels</h2>
-    <p>Sakib Apparels Ltd, established in 2016, is a renowned garment industry committed to providing you the best quality knitwear items such as Polos, Basic T-shirts, Hoodies, Sweatshirts, Trousers, Swimsuits, Tops, Crop tops, Kids items etc. It is situated in Hemayetpur, Savar, Dhaka, Bangladesh.</p>
-    <a class="btn" href="#contact">Read more</a>
+    <small data-edit="about.small">About us</small>
+    <h2 data-edit="about.title">Welcome to Sakib Apparels</h2>
+    <p data-edit="about.text">Sakib Apparels Ltd, established in 2016, is a renowned garment industry committed to providing you the best quality knitwear items such as Polos, Basic T-shirts, Hoodies, Sweatshirts, Trousers, Swimsuits, Tops, Crop tops, Kids items etc. It is situated in Hemayetpur, Savar, Dhaka, Bangladesh.</p>
+    <a data-edit="about.btn" class="btn" href="#contact">Read more</a>
   </div>
   <div class="pic">
     <!-- photo stack: click to sweep the front photo away. data-num / data-label are the badge text for each photo -->
     <div class="stack" id="stack" role="button" tabindex="0" aria-label="Show next photo">
-      <img data-num="2016" data-label="Established" src="images/factory-cutting.jpg" alt="Cutting table at the Sakib Apparels factory" style="object-position:50% 70%">
-      <img data-num="10" data-label="Years of experience" src="images/factory-2.jpg" alt="Sewing line at the Sakib Apparels factory">
-      <img data-num="6" data-label="Product types" src="https://images.unsplash.com/photo-1768745888568-b3ef7c7ba366?auto=format&fit=crop&w=1100&q=70" alt="Fabric being sewn on an industrial machine">
-      <img data-num="6" data-label="Global brands" src="images/factory-3.jpg" alt="Sweatshirts on the sewing line at the Sakib Apparels factory">
+      <img data-img-edit="about.p1" data-num="2016" data-label="Established" src="images/factory-cutting.jpg" alt="Cutting table at the Sakib Apparels factory" style="object-position:50% 70%">
+      <img data-img-edit="about.p2" data-num="10" data-label="Years of experience" src="images/factory-2.jpg" alt="Sewing line at the Sakib Apparels factory">
+      <img data-img-edit="about.p3" data-num="6" data-label="Product types" src="https://images.unsplash.com/photo-1768745888568-b3ef7c7ba366?auto=format&fit=crop&w=1100&q=70" alt="Fabric being sewn on an industrial machine">
+      <img data-img-edit="about.p4" data-num="6" data-label="Global brands" src="images/factory-3.jpg" alt="Sweatshirts on the sewing line at the Sakib Apparels factory">
     </div>
     <div class="badge" id="badge" aria-live="polite"><b>2016</b><span>Established</span></div>
     <div class="taphint">Tap the photo</div>
@@ -272,58 +313,60 @@ a.card:hover{border-color:var(--blue)}
 </div></section>
 
 <section class="block alt" id="products"><div class="wrap">
-  <div class="head"><small>What we make</small><h2>Our Products</h2><p>Our main knitwear items.</p><div class="bar"></div></div>
+  <div class="head"><small data-edit="products.small">What we make</small><h2 data-edit="products.title">Our Products</h2><p data-edit="products.sub">Our main knitwear items.</p><div class="bar"></div></div>
   <div class="products swipe"><!-- product photos: free Unsplash pictures on white, stored in images/products -->
-    <div class="prod"><img src="images/products/polos.jpg" alt="Stack of folded polo shirts" loading="lazy"><div><h3>Polos</h3></div></div>
-    <div class="prod"><img src="images/products/printed-tshirts.jpg" alt="Black printed T-shirt" loading="lazy"><div><h3>Printed T-shirts</h3></div></div>
-    <div class="prod"><img src="images/products/tops.jpg" alt="Folded tops in pastel colours" loading="lazy"><div><h3>Tops</h3></div></div>
-    <div class="prod"><img src="images/products/crop-tops.jpg" alt="Black crop top, front and back" loading="lazy"><div><h3>Crop Tops</h3></div></div>
-    <div class="prod"><img src="images/products/hoodies.jpg" alt="Black hoodie, front and back" loading="lazy"><div><h3>Hoodies</h3></div></div>
-    <div class="prod"><img src="images/products/sweatshirts.jpg" alt="Light blue and dark green sweatshirts" loading="lazy"><div><h3>Sweatshirts</h3></div></div>
+    <div class="prod"><img data-img-edit="products.i1" src="images/products/polos.jpg" alt="Stack of folded polo shirts" loading="lazy"><div><h3 data-edit="products.1">Polos</h3></div></div>
+    <div class="prod"><img data-img-edit="products.i2" src="images/products/printed-tshirts.jpg" alt="Black printed T-shirt" loading="lazy"><div><h3 data-edit="products.2">Printed T-shirts</h3></div></div>
+    <div class="prod"><img data-img-edit="products.i3" src="images/products/tops.jpg" alt="Folded tops in pastel colours" loading="lazy"><div><h3 data-edit="products.3">Tops</h3></div></div>
+    <div class="prod"><img data-img-edit="products.i4" src="images/products/crop-tops.jpg" alt="Black crop top, front and back" loading="lazy"><div><h3 data-edit="products.4">Crop Tops</h3></div></div>
+    <div class="prod"><img data-img-edit="products.i5" src="images/products/hoodies.jpg" alt="Black hoodie, front and back" loading="lazy"><div><h3 data-edit="products.5">Hoodies</h3></div></div>
+    <div class="prod"><img data-img-edit="products.i6" src="images/products/sweatshirts.jpg" alt="Light blue and dark green sweatshirts" loading="lazy"><div><h3 data-edit="products.6">Sweatshirts</h3></div></div>
   </div>
   <p class="swipe-hint">Swipe to see more</p>
 </div></section>
 
 <section class="block" id="clients"><div class="wrap">
-  <div class="head"><small>Trusted by</small><h2>Our Clients</h2><p>Brands and buyers we are proud to work with.</p><div class="bar"></div></div>
+  <div class="head"><small data-edit="clients.small">Trusted by</small><h2 data-edit="clients.title">Our Clients</h2><p data-edit="clients.sub">Brands and buyers we are proud to work with.</p><div class="bar"></div></div>
   <div class="clients" id="clientList">
-    <div class="client" style="--d:0s"><img src="images/clients/zara.svg" alt="ZARA logo"><span>ZARA</span></div>
-    <div class="client" style="--d:.45s"><img src="images/clients/bershka.svg" alt="Bershka logo"><span>BERSHKA</span></div>
-    <div class="client" style="--d:.9s"><b class="wordmark">Sugardoll</b><span>SUGARDOLL</span></div>
-    <div class="client" style="--d:1.35s"><img src="images/clients/barbie.svg" alt="Barbie logo"><span>BARBIE</span></div>
-    <div class="client" style="--d:1.8s"><img src="images/clients/uniqlo.svg" alt="UNIQLO logo"><span>UNIQLO</span></div>
-    <div class="client" style="--d:2.25s"><img src="images/clients/levis.svg" alt="Levi's logo"><span>LEVI'S</span></div>
+    <div class="client" style="--d:0s"><img data-img-edit="clients.logo.zara" src="images/clients/zara.svg" alt="ZARA logo"><span data-edit="clients.1">ZARA</span></div>
+    <div class="client" style="--d:.45s"><img data-img-edit="clients.logo.bershka" src="images/clients/bershka.svg" alt="Bershka logo"><span data-edit="clients.2">BERSHKA</span></div>
+    <div class="client" style="--d:.9s"><b class="wordmark">Sugardoll</b><span data-edit="clients.3">SUGARDOLL</span></div>
+    <div class="client" style="--d:1.35s"><img data-img-edit="clients.logo.barbie" src="images/clients/barbie.svg" alt="Barbie logo"><span data-edit="clients.4">BARBIE</span></div>
+    <div class="client" style="--d:1.8s"><img data-img-edit="clients.logo.uniqlo" src="images/clients/uniqlo.svg" alt="UNIQLO logo"><span data-edit="clients.5">UNIQLO</span></div>
+    <div class="client" style="--d:2.25s"><img data-img-edit="clients.logo.levis" src="images/clients/levis.svg" alt="Levi's logo"><span data-edit="clients.6">LEVI'S</span></div>
   </div>
 </div></section>
 
-<section class="block stats"><div class="wrap">
-  <div class="head"><small>Our excellence</small><h2>Sakib Apparels in numbers</h2><div class="bar"></div></div>
+<section class="block stats" id="numbers"><div class="wrap">
+  <div class="head"><small data-edit="numbers.small">Our excellence</small><h2 data-edit="numbers.title">Sakib Apparels in numbers</h2><div class="bar"></div></div>
   <div class="nums">
-    <div class="num"><b data-to="10">10</b><span>Years of experience</span></div>
-    <div class="num"><b data-to="6">6</b><span>Product types</span></div>
-    <div class="num"><b data-to="6">6</b><span>Global brands</span></div>
+    <div class="num"><b data-edit="numbers.n1" data-to="10">10</b><span data-edit="numbers.l1">Years of experience</span></div>
+    <div class="num"><b data-edit="numbers.n2" data-to="6">6</b><span data-edit="numbers.l2">Product types</span></div>
+    <div class="num"><b data-edit="numbers.n3" data-to="6">6</b><span data-edit="numbers.l3">Global brands</span></div>
   </div>
 </div></section>
 
 <section class="block" id="contact"><div class="wrap">
-  <div class="head"><small>Get in touch</small><h2>Contact Us</h2><p>Reach our head office or visit our factory.</p><div class="bar"></div></div>
+  <div class="head"><small data-edit="contact.small">Get in touch</small><h2 data-edit="contact.title">Contact Us</h2><p data-edit="contact.sub">Reach our head office or visit our factory.</p><div class="bar"></div></div>
   <div class="contact">
-    <div class="card"><h3>Head Office</h3><p>House 15, Road 17, Sector 7,<br>Uttara, Dhaka, Bangladesh</p></div>
-    <div class="card"><h3>Factory</h3><p>Hemayetpur, Savar,<br>Dhaka, Bangladesh</p></div>
-    <a class="card" href="tel:+8801819550355"><h3>Phone</h3><p>01819-550355</p></a>
-    <a class="card" href="mailto:sakibapparelsltd@gmail.com"><h3>Email</h3><p>sakibapparelsltd@gmail.com</p></a>
+    <div class="card"><h3 data-edit="contact.c1">Head Office</h3><p data-edit="contact.c1text">House 15, Road 17, Sector 7,<br>Uttara, Dhaka, Bangladesh</p></div>
+    <div class="card"><h3 data-edit="contact.c2">Factory</h3><p data-edit="contact.c2text">Hemayetpur, Savar,<br>Dhaka, Bangladesh</p></div>
+    <a class="card" href="tel:+8801819550355"><h3 data-edit="contact.c3">Phone</h3><p>01819-550355</p></a>
+    <a class="card" href="mailto:sakibapparelsltd@gmail.com"><h3 data-edit="contact.c4">Email</h3><p>sakibapparelsltd@gmail.com</p></a>
   </div>
 </div></section>
 
 <footer>
   <div class="wrap fgrid">
-    <div><h4>Sakib Apparels Ltd</h4><p>Your trusted knitwear manufacturing partner.</p><p>Head office: House 15, Road 17, Sector 7, Uttara, Dhaka</p><p>Factory: Hemayetpur, Savar, Dhaka</p><p><a href="tel:+8801819550355">01819-550355</a><a href="mailto:sakibapparelsltd@gmail.com">sakibapparelsltd@gmail.com</a></p></div>
+    <div><h4 data-edit="footer.title">Sakib Apparels Ltd</h4><p data-edit="footer.tag">Your trusted knitwear manufacturing partner.</p><p data-edit="footer.office">Head office: House 15, Road 17, Sector 7, Uttara, Dhaka</p><p data-edit="footer.factory">Factory: Hemayetpur, Savar, Dhaka</p><p><a href="tel:+8801819550355">01819-550355</a><a href="mailto:sakibapparelsltd@gmail.com">sakibapparelsltd@gmail.com</a></p></div>
     <div><h4>Company</h4><a href="#about">About Us</a><a href="#products">Our Products</a><a href="#clients">Our Clients</a></div>
     <div><h4>Quick links</h4><a href="#contact">Contact Us</a></div>
   </div>
   <div class="copyright">Copyright &copy; <span id="yr"></span> Sakib Apparels Ltd. All rights reserved.</div>
 </footer>
 
+<script src="sheets-config.js"></script>
+<script src="site.js"></script>
 <script>
 // hero slider: fades every 5 seconds, dots jump to a slide
 const slides=[...document.querySelectorAll(".slide")], dots=document.getElementById("dots"); let cur=0, timer;
@@ -369,7 +412,7 @@ const io=new IntersectionObserver(es=>es.forEach(e=>{ if(!e.isIntersecting) retu
   const el=e.target, to=+el.dataset.to, sfx=el.dataset.suffix||"", t0=performance.now();
   const step=t=>{ const p=Math.min(1,(t-t0)/1400); el.textContent=fmt(Math.round(to*(1-Math.pow(1-p,3))))+(p===1?sfx:""); if(p<1) requestAnimationFrame(step); };
   requestAnimationFrame(step); setTimeout(()=>{ el.textContent=fmt(to)+sfx; },1600); }),{threshold:.4}); // the timeout makes sure the final number always shows
-document.querySelectorAll(".num b").forEach(el=>io.observe(el));
+if(!(window.SITE&&SITE.editing)) document.querySelectorAll(".num b").forEach(el=>io.observe(el));
 const cl=document.getElementById("clientList");
 new IntersectionObserver((es,o)=>es.forEach(e=>{ if(e.isIntersecting){ cl.classList.add("in"); o.disconnect(); } }),{threshold:.6}).observe(cl);
 document.getElementById("yr").textContent=new Date().getFullYear();

@@ -1,0 +1,258 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Website Editor - Sakib Apparels Ltd</title>
+<meta name="robots" content="noindex">
+<style>
+:root{--blue:#2563eb;--deep:#1e3a8a;--ink:#0f1b33;--mute:#5f6f8c;--line:#e3e9f5;--soft:#f4f7fd}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:#e9eef7;display:flex;flex-direction:column}
+button{font-family:inherit}
+.btn{border:0;border-radius:9px;padding:10px 16px;font-weight:700;font-size:14px;cursor:pointer;background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn:hover{border-color:var(--blue);color:var(--blue)}
+.btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+.btn.primary:hover{background:var(--deep);color:#fff}
+.btn.primary:disabled{background:#94a3b8;border-color:#94a3b8;cursor:default}
+.btn.danger{color:#dc2626;border-color:#f3b4b4}.btn.danger:hover{background:#dc2626;color:#fff}
+/* toolbar */
+.bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 14px;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 4px 14px rgba(15,27,51,.06);z-index:2}
+.bar h1{font-size:16px;margin:0 10px 0 0;white-space:nowrap}.bar h1 b{color:var(--blue)}
+.bar .sp{flex:1}
+.status{font-size:13px;color:var(--mute);padding:6px 10px;border-radius:999px;background:var(--soft);white-space:nowrap}
+.status.dirty{color:#b45309;background:#fffaf0}.status.ok{color:#15803d;background:#f0fdf4}
+.help{font-size:13px;color:var(--mute);padding:8px 14px;background:#f8fafc;border-bottom:1px solid var(--line)}
+.help b{color:#b45309}
+.stage{flex:1;display:flex;justify-content:center;min-height:0;padding:0}
+iframe{border:0;width:100%;height:100%;background:#fff}
+.stage.phone{padding:14px 0}.stage.phone iframe{width:390px;border-radius:18px;box-shadow:0 10px 40px rgba(15,27,51,.25)}
+/* login + dialogs */
+.cover{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:5vh 16px;background:rgba(15,27,51,.55)}
+.cover[hidden]{display:none}
+.box{background:#fff;border-radius:16px;padding:24px;width:100%;max-width:560px;box-shadow:0 30px 70px rgba(15,27,51,.35)}
+.box h2{margin:0 0 6px;font-size:21px}.box p.sub{margin:0 0 18px;color:var(--mute);font-size:14px}
+.q{margin:0 0 16px}
+.q > label,.q > .lbl{display:block;font-weight:700;font-size:14px;margin-bottom:7px}
+.q small{display:block;color:var(--mute);font-size:12px;margin-top:5px}
+input[type=text],input[type=password],textarea,select{width:100%;padding:11px 12px;border:2px solid #b8c9ea;border-radius:10px;font:15px Arial,sans-serif;color:var(--ink);background:#fff}
+input:focus,textarea:focus,select:focus{outline:0;border-color:var(--blue)}
+textarea{min-height:120px;resize:vertical;line-height:1.5}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opts label{display:flex;align-items:center;gap:7px;border:2px solid var(--line);border-radius:10px;padding:9px 12px;cursor:pointer;font-size:14px}
+.opts label:has(input:checked){border-color:var(--blue);background:#eff6ff}
+.opts input{accent-color:var(--blue)}
+.pv{margin-top:10px;max-height:200px;border-radius:10px;display:block}
+.pv[hidden],#wMenuLabel[hidden]{display:none}
+.acts{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+.err{color:#dc2626;font-size:13px;min-height:18px;margin:6px 0}
+.pw{position:relative}.pw input{padding-right:70px}
+.pw button{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:#eef4ff;color:var(--blue);font-weight:700;padding:7px 10px;border-radius:8px;cursor:pointer}
+.hist{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;font-size:14px}
+#imgQs[hidden],.q[hidden]{display:none}
+@media(max-width:700px){.bar h1{width:100%}.help{font-size:12px}}
+</style></head><body>
+
+<div class="bar">
+  <h1>Website <b>editor</b></h1>
+  <button class="btn primary" id="addBtn" disabled>+ Add section</button>
+  <button class="btn" id="phoneBtn">Phone view</button>
+  <button class="btn" id="histBtn" disabled>Version history</button>
+  <button class="btn danger" id="discardBtn" disabled>Discard changes</button>
+  <span class="sp"></span>
+  <span class="status" id="st">Loading...</span>
+  <button class="btn primary" id="pubBtn" disabled>Publish</button>
+</div>
+<div class="help">Click any text on the page to change it. Changed text is marked <b>yellow</b> until you press <b>Publish</b>. Use "+ Add section here" between sections to add a new one, the blue "Drag to move" button to move any section, and "Replace" under a picture to change it.</div>
+<div class="stage" id="stage"><iframe id="fr" title="Home page being edited"></iframe></div>
+
+<!-- login -->
+<div class="cover" id="login" hidden><div class="box" style="max-width:380px;margin-top:10vh">
+  <h2>Website editor</h2><p class="sub">Enter the admin password to edit the home page.</p>
+  <div class="pw"><input type="password" id="pw" placeholder="Admin password" autocomplete="current-password"><button type="button" id="eye">Show</button></div>
+  <div class="err" id="lerr"></div>
+  <button class="btn primary" id="lgo" style="width:100%">Unlock</button>
+</div></div>
+
+<!-- add / edit section -->
+<div class="cover" id="wiz" hidden><div class="box">
+  <h2 id="wTitle">Add a section</h2><p class="sub">Answer a few questions. You can change everything later.</p>
+  <div class="q"><label for="wAfter">1. Where should it go?</label><select id="wAfter"></select></div>
+  <div class="q"><label for="wHead">2. Section title</label><input type="text" id="wHead" maxlength="200" placeholder="e.g. Our Machinery"></div>
+  <div class="q"><label for="wText">3. Text</label><textarea id="wText" maxlength="8000" placeholder="Write the text for this section..."></textarea><small>Leave an empty line to start a new paragraph.</small></div>
+  <div class="q"><span class="lbl">4. Will it contain a picture?</span>
+    <div class="opts"><label><input type="radio" name="wHas" value="yes"> Yes</label><label><input type="radio" name="wHas" value="no" checked> No, text only</label></div></div>
+  <div id="imgQs" hidden>
+    <div class="q"><label for="wFile">5. Choose the picture</label><input type="file" id="wFile" accept="image/jpeg,image/png,image/webp"><img class="pv" id="wPv" alt="" hidden><small>JPG, PNG or WEBP. Large photos are made smaller automatically.</small></div>
+    <div class="q"><span class="lbl">6. Where should the text be?</span>
+      <div class="opts">
+        <label><input type="radio" name="wPos" value="right" checked> Left of the picture</label>
+        <label><input type="radio" name="wPos" value="left"> Right of the picture</label>
+        <label><input type="radio" name="wPos" value="bottom"> Above the picture</label>
+        <label><input type="radio" name="wPos" value="top"> Below the picture</label>
+      </div><small>On phones the picture is always shown above the text, except for "Above the picture".</small></div>
+  </div>
+  <div class="q"><span class="lbl" id="bgQ">5. Background colour</span>
+    <div class="opts"><label><input type="radio" name="wBg" value="white" checked> White</label><label><input type="radio" name="wBg" value="soft"> Light grey-blue</label><label><input type="radio" name="wBg" value="blue"> Blue</label></div></div>
+  <div class="q"><span class="lbl" id="menuQ">6. Show a link to it in the top menu?</span>
+    <div class="opts"><label><input type="radio" name="wMenu" value="no" checked> No</label><label><input type="radio" name="wMenu" value="yes"> Yes</label></div>
+    <input type="text" id="wMenuLabel" maxlength="40" placeholder="Menu text, e.g. Machinery" style="margin-top:8px" hidden></div>
+  <div class="err" id="werr"></div>
+  <div class="acts"><button class="btn" id="wCancel">Cancel</button><button class="btn primary" id="wOk">Add section</button></div>
+</div></div>
+
+<!-- version history -->
+<div class="cover" id="hist" hidden><div class="box">
+  <h2>Version history</h2><p class="sub">The 10 previously published versions. Restoring one publishes it again; the current version is kept here too, so you can undo.</p>
+  <div id="histList">Loading...</div>
+  <div class="acts"><button class="btn" id="hClose">Close</button></div>
+</div></div>
+
+<input type="file" id="repFile" accept="image/jpeg,image/png,image/webp" hidden>
+<script src="sheets-config.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+let PASS="", W=null, dirty=false, editId=null, wizImg=null, wizImgData=null;
+async function api(payload){
+  const res=await fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify(Object.assign({password:PASS},payload))});
+  const j=await res.json(); if(!j.ok) throw new Error(j.error||"Request failed"); return j;
+}
+function status(text,cls){ const s=$("st"); s.textContent=text; s.className="status"+(cls?" "+cls:""); }
+function mark(v){ dirty=v; status(v?"Unpublished changes":"Everything published",v?"dirty":"ok"); $("pubBtn").disabled=!v; $("discardBtn").disabled=!v; }
+window.addEventListener("beforeunload",e=>{ if(dirty){ e.preventDefault(); e.returnValue=""; } });
+
+// ---------- login (admin password; remembered like the Admin Panel) ----------
+function askPassword(){ return new Promise(res=>{
+  $("login").hidden=false; $("pw").focus();
+  $("eye").onclick=()=>{ const s=$("pw").type==="password"; $("pw").type=s?"text":"password"; $("eye").textContent=s?"Hide":"Show"; };
+  const go=async()=>{ const v=$("pw").value; if(!v) return; $("lgo").disabled=true; $("lgo").textContent="Checking...";
+    try{ PASS=v; const r=(await api({action:"auth"})).role; if(r!=="admin") throw new Error("That password cannot open the editor.");
+      try{ sessionStorage.setItem("pwAdmin",v); }catch(e){} $("login").hidden=true; res(); return; }
+    catch(e){ PASS=""; $("lerr").textContent=/password|editor|attempts|same/i.test(e.message)?(e.message==="Wrong password"?"Wrong password. Please try again.":e.message):"Could not connect. Check your internet."; }
+    $("lgo").disabled=false; $("lgo").textContent="Unlock"; $("pw").select(); };
+  $("lgo").onclick=go; $("pw").onkeydown=e=>{ if(e.key==="Enter") go(); };
+}); }
+async function login(){
+  let saved=""; try{ saved=sessionStorage.getItem("pwAdmin")||""; }catch(e){}
+  if(saved){ try{ PASS=saved; if((await api({action:"auth"})).role==="admin") return; }catch(e){} PASS=""; }
+  await askPassword();
+}
+
+// ---------- the page being edited ----------
+let published=null;
+function loadFrame(){ return new Promise(res=>{ const fr=$("fr"); fr.onload=()=>{ W=fr.contentWindow; res(); }; fr.src="index.html?edit=1&t="+Date.now(); }); }
+const handlers={
+  changed(){ mark(true); },
+  add(afterId){ openWizard(null,afterId); },
+  edit(id){ openWizard(id); },
+  up(id){ move(id,-1); }, down(id){ move(id,1); },
+  replaceImage(key){ pickPicture(id=>update(site=>{ site.images=site.images||{}; site.images[key]=id; })); },
+  replaceSectionImage(secId){ pickPicture(id=>update(site=>{ const s=site.sections.find(x=>x.id===secId); if(s){ s.img=id; if(s.layout==="none") s.layout="right"; } })); },
+  reorder(id,index){ update(site=>{ const o=site.order.filter(x=>x!==id); if(site.order.indexOf(id)===index) return; o.splice(index,0,id); site.order=o; }); },
+  del(id){ const s=W.SITE.current.sections.find(x=>x.id===id); if(!confirm('Delete the section "'+(s&&s.title||"Untitled")+'"? (You can still discard your changes before publishing.)')) return;
+    update(site=>{ site.sections=site.sections.filter(x=>x.id!==id); site.order=site.order.filter(x=>x!==id); }); }
+};
+// apply a change to the sections while keeping any text that was typed but not published yet
+function update(fn){ const site=JSON.parse(JSON.stringify(W.SITE.collect())); fn(site); W.SITE.apply(site); mark(true); }
+function move(id,d){ update(site=>{ const i=site.order.indexOf(id), j=i+d; if(i<0||j<0||j>=site.order.length) return; [site.order[i],site.order[j]]=[site.order[j],site.order[i]]; }); }
+async function openPage(site){
+  await loadFrame();
+  W.SITE.enableEditing(handlers); W.SITE.apply(site||{});
+  mark(false);
+}
+
+// ---------- replace a picture: file picker -> smaller copy -> upload -> shown at once ----------
+function pickPicture(done){
+  const f=$("repFile"); f.value="";
+  f.onchange=async()=>{ const file=f.files[0]; if(!file) return;
+    try{ status("Uploading picture..."); const data=await shrink(file); const id=(await api({action:"siteUpload",imgData:data})).id; done(id); status("Picture replaced - press Publish to make it live","dirty"); }
+    catch(err){ status("Picture not replaced: "+err.message,"dirty"); } };
+  f.click();
+}
+
+// ---------- add / edit section ----------
+const radio=n=>document.querySelector('input[name="'+n+'"]:checked').value;
+const setRadio=(n,v)=>{ const r=document.querySelector('input[name="'+n+'"][value="'+v+'"]'); if(r) r.checked=true; };
+function syncWizard(){
+  const has=radio("wHas")==="yes"; $("imgQs").hidden=!has;
+  $("bgQ").textContent=(has?"7":"5")+". Background colour"; $("menuQ").textContent=(has?"8":"6")+". Show a link to it in the top menu?";
+  $("wMenuLabel").hidden=radio("wMenu")!=="yes";
+}
+document.querySelectorAll('input[name="wHas"],input[name="wMenu"]').forEach(r=>r.onchange=syncWizard);
+function openWizard(id,afterId){
+  editId=id; wizImg=null; wizImgData=null; $("werr").textContent=""; $("wFile").value=""; $("wPv").hidden=true;
+  const list=W.SITE.sectionList().filter(s=>s.id!==id);
+  $("wAfter").innerHTML=""; list.forEach(s=>{ const o=document.createElement("option"); o.value=s.id; o.textContent="After: "+s.label; $("wAfter").appendChild(o); });
+  const sec=id&&W.SITE.current.sections.find(x=>x.id===id);
+  if(sec){
+    $("wTitle").textContent="Edit section"; $("wOk").textContent="Save section";
+    const order=W.SITE.current.order, i=order.indexOf(id); $("wAfter").value=i>0?order[i-1]:list[0].id;
+    $("wHead").value=sec.title; $("wText").value=sec.text; setRadio("wHas",sec.img?"yes":"no"); setRadio("wPos",sec.img?sec.layout:"right");
+    setRadio("wBg",sec.bg); setRadio("wMenu",sec.menu?"yes":"no"); $("wMenuLabel").value=sec.menuLabel||"";
+    if(sec.img){ wizImg=sec.img; $("wPv").src=W.SITE.imgUrl(sec.img); $("wPv").hidden=false; }
+  }else{
+    $("wTitle").textContent="Add a section"; $("wOk").textContent="Add section";
+    $("wAfter").value=afterId||(list.find(s=>s.id==="contact")?list[list.findIndex(s=>s.id==="contact")-1]?.id:list[list.length-1].id)||list[0].id;
+    $("wHead").value=""; $("wText").value=""; setRadio("wHas","no"); setRadio("wPos","right"); setRadio("wBg","white"); setRadio("wMenu","no"); $("wMenuLabel").value="";
+  }
+  syncWizard(); $("wiz").hidden=false; $("wHead").focus();
+}
+$("wCancel").onclick=()=>{ $("wiz").hidden=true; };
+// pictures are made smaller before upload (max 1600px)
+function shrink(file){ return new Promise((res,rej)=>{ const fr=new FileReader(); fr.onerror=rej; fr.onload=()=>{ const im=new Image(); im.onerror=()=>rej(new Error("That file is not a picture"));
+  im.onload=()=>{ const s=Math.min(1,1600/Math.max(im.width,im.height)), c=document.createElement("canvas"); c.width=Math.round(im.width*s); c.height=Math.round(im.height*s);
+    const g=c.getContext("2d"); g.fillStyle="#fff"; g.fillRect(0,0,c.width,c.height); g.drawImage(im,0,0,c.width,c.height); res(c.toDataURL("image/jpeg",.85)); }; im.src=fr.result; }; fr.readAsDataURL(file); }); }
+$("wFile").onchange=async()=>{ const f=$("wFile").files[0]; if(!f) return; try{ wizImgData=await shrink(f); $("wPv").src=wizImgData; $("wPv").hidden=false; }catch(e){ $("werr").textContent=e.message; } };
+$("wOk").onclick=async()=>{
+  const has=radio("wHas")==="yes", title=$("wHead").value.trim(), text=$("wText").value.trim();
+  if(!title&&!text){ $("werr").textContent="Please write a title or some text."; return; }
+  if(has&&!wizImg&&!wizImgData){ $("werr").textContent="Please choose a picture, or answer \"No\" to question 4."; return; }
+  if(radio("wMenu")==="yes"&&!($("wMenuLabel").value.trim()||title)){ $("werr").textContent="Please write the menu text."; return; }
+  $("wOk").disabled=true;
+  try{
+    let img=has?wizImg:"";
+    if(has&&wizImgData){ $("wOk").textContent="Uploading picture..."; img=(await api({action:"siteUpload",imgData:wizImgData})).id; }
+    const sec={id:editId||("s"+Math.random().toString(36).slice(2,12)),title,text,img,layout:has?radio("wPos"):"none",bg:radio("wBg"),menu:radio("wMenu")==="yes",menuLabel:$("wMenuLabel").value.trim()};
+    const after=$("wAfter").value;
+    update(site=>{
+      const i=site.sections.findIndex(x=>x.id===sec.id); if(i>=0) site.sections[i]=sec; else site.sections.push(sec);
+      site.order=site.order.filter(x=>x!==sec.id); site.order.splice(site.order.indexOf(after)+1,0,sec.id);
+    });
+    $("wiz").hidden=true;
+    const el=W.document.getElementById(sec.id); if(el) el.scrollIntoView({behavior:"smooth",block:"center"});
+  }catch(e){ $("werr").textContent="Could not save: "+e.message; }
+  $("wOk").disabled=false; $("wOk").textContent=editId?"Save section":"Add section";
+};
+
+// ---------- publish, discard, history ----------
+$("pubBtn").onclick=async()=>{
+  $("pubBtn").disabled=true; status("Publishing...");
+  try{ const r=await api({action:"saveSite",site:W.SITE.collect()}); published=r.site; W.SITE.remember(r.site); W.SITE.apply(r.site); mark(false); status("Published - visitors see it now","ok"); }
+  catch(e){ status("Not published: "+e.message,"dirty"); $("pubBtn").disabled=false; }
+};
+$("discardBtn").onclick=async()=>{ if(!confirm("Throw away all changes since the last publish?")) return; status("Loading..."); await openPage(published); };
+$("addBtn").onclick=()=>openWizard(null);
+$("phoneBtn").onclick=()=>{ const p=$("stage").classList.toggle("phone"); $("phoneBtn").textContent=p?"Computer view":"Phone view"; };
+$("hClose").onclick=()=>{ $("hist").hidden=true; };
+$("histBtn").onclick=async()=>{
+  $("hist").hidden=false; $("histList").textContent="Loading...";
+  try{ const items=(await api({action:"siteHistory"})).items;
+    if(!items.length){ $("histList").textContent="Nothing yet. A version is kept every time you publish."; return; }
+    $("histList").innerHTML="";
+    items.forEach(it=>{ const row=document.createElement("div"); row.className="hist";
+      const t=document.createElement("span"); t.textContent=new Date(it.time).toLocaleString("en-GB",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"});
+      const b=document.createElement("button"); b.className="btn"; b.textContent="Restore this version";
+      b.onclick=async()=>{ if(dirty&&!confirm("Your unpublished changes will be lost. Continue?")) return; b.disabled=true; b.textContent="Restoring...";
+        try{ const r=await api({action:"siteRollback",time:it.time}); published=r.site; W.SITE.remember(r.site); await openPage(r.site); $("hist").hidden=true; status("Restored and published","ok"); }
+        catch(e){ b.textContent="Failed: "+e.message; } };
+      row.append(t,b); $("histList").appendChild(row); });
+  }catch(e){ $("histList").textContent="Could not load: "+e.message; }
+};
+
+(async()=>{
+  if(typeof SCRIPT_URL!=="string"||!SCRIPT_URL.startsWith("http")){ status("Not set up","dirty"); return; }
+  await login();
+  status("Loading the page...");
+  try{ published=(await api({action:"site"})).site; }catch(e){ published=null; }
+  await openPage(published);
+  ["addBtn","histBtn"].forEach(id=>$(id).disabled=false);
+})();
+</script>
+</body></html>

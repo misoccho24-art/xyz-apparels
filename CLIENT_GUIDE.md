@@ -47,3 +47,24 @@ Use long passwords (12+ characters). Write them down somewhere safe: Google does
 ## Good to know
 - Your Google account's free storage (15 GB) is shared with Gmail and Photos. Pictures are small (about 100 KB each).
 - Turn on **2-Step Verification** for the Google account that owns the data.
+
+## Editing the home page (your-link/editor)
+Open `your-link/editor` and enter the **admin password**. You see the home page with a toolbar on top.
+- **Change any text:** click it and type. Changed text is marked yellow. Headings are one line (Enter finishes);
+  paragraphs can have several lines.
+- **Add a section:** press **+ Add section** (or "+ Add section here" between two sections) and answer the questions:
+  where it goes, title, text, whether it has a picture, where the text sits next to the picture (left, right, above,
+  below), background colour, and whether it gets a link in the top menu.
+- **Added sections** have buttons: **Edit section**, **Move up**, **Move down**, **Delete**.
+- **Move any section** (also the built-in ones): grab its blue **Drag to move** button and drop it where you want it;
+  a blue line shows where it will land.
+- **Change a picture:** press **Replace** under it (or "Replace this photo" in the top slider, "Replace front photo"
+  under the About Us photos) and choose a picture from your computer or phone.
+- **Phone view** shows how the page looks on a phone.
+- Nothing changes for visitors until you press **Publish**. **Discard changes** throws away everything since the last
+  publish.
+- **Version history** keeps the 10 previous published versions; **Restore this version** brings one back (your current
+  version is kept too, so you can undo).
+Good to know: pictures you add here are stored in the Drive folder **"Sakib Site Images"** and are public (anyone with
+the link can see them), because the home page is public. Visitors may need up to 5 minutes, or a page refresh, to see
+a new publish.

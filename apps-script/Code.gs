@@ -58,6 +58,7 @@ function roleFor_(pw) {
 function adminOnly_(role) { if (role !== 'admin') throw new Error('Not allowed'); }
 
 function handle_(req) {
+  if (req.action === 'site') return { ok: true, site: getSite_() }; // public: the home page content, no password
   const role = roleFor_(req.password);
   switch (req.action) {
     case 'auth':    return { ok: true, role: role };
@@ -70,6 +71,10 @@ function handle_(req) {
     case 'binDelete': adminOnly_(role); return withLock_(() => binDelete_(req));
     case 'history': adminOnly_(role); return { ok: true, items: historyList_() };
     case 'rollback': adminOnly_(role); return withLock_(() => rollback_(req));
+    case 'saveSite': adminOnly_(role); return withLock_(() => saveSite_(req));
+    case 'siteUpload': adminOnly_(role); return siteUpload_(req);
+    case 'siteHistory': adminOnly_(role); return { ok: true, items: siteHistory_() };
+    case 'siteRollback': adminOnly_(role); return withLock_(() => siteRollback_(req));
     default: throw new Error('Unknown action');
   }
 }
@@ -398,4 +403,105 @@ function writeAll_(req) {
     purge_();
     return { ok: true, ids: ids };
   });
+}
+
+// ---------- home page editor (link/editor) ----------
+// The published content lives in the "Site" tab; the 10 previous versions in "Site History".
+// Pictures of added sections are in their own Drive folder and are public (a website needs that).
+const SITE_HEADERS = ['Published', 'Content'];
+const SITE_HISTORY_HEADERS = ['Time', 'Content'];
+const SITE_FOLDER_NAME = 'Sakib Site Images';
+const SITE_KEEP = 10;
+const LAYOUTS = ['left', 'right', 'top', 'bottom', 'none'];
+const BGS = ['white', 'soft', 'blue'];
+
+function readChunked_(sh, row) {
+  if (sh.getLastRow() < row) return '';
+  return sh.getRange(row, 2, 1, Math.max(1, sh.getLastColumn() - 1)).getDisplayValues()[0].join('');
+}
+function writeChunked_(sh, row, first, text) {
+  const cells = [first]; for (let i = 0; i < text.length; i += CHUNK) cells.push(text.substr(i, CHUNK));
+  ensure_(sh, row, cells.length);
+  const old = Math.max(1, sh.getLastColumn());
+  if (sh.getLastRow() >= row) sh.getRange(row, 1, 1, old).clearContent();
+  sh.getRange(row, 1, 1, cells.length).setNumberFormat('@').setValues([cells]);
+}
+
+function getSite_() {
+  const cache = CacheService.getScriptCache();
+  const c = cache.get('site');
+  if (c) return JSON.parse(c);
+  const text = readChunked_(sheet_('Site', SITE_HEADERS), 2);
+  const site = text ? JSON.parse(text) : null;
+  if (text && text.length < 90000) cache.put('site', text, 21600);
+  return site;
+}
+
+const str_ = (v, max) => String(v == null ? '' : v).slice(0, max);
+function cleanSite_(s) {
+  if (!s || typeof s !== 'object') throw new Error('Nothing to publish');
+  const texts = {};
+  Object.keys(s.texts || {}).slice(0, 400).forEach(k => { if (/^[a-z0-9._-]{1,60}$/.test(k)) texts[k] = str_(s.texts[k], 5000); });
+  const sections = (Array.isArray(s.sections) ? s.sections : []).slice(0, 40).map(x => ({
+    id: /^s[a-z0-9]{4,16}$/.test(x.id) ? x.id : 's' + Utilities.getUuid().replace(/-/g, '').slice(0, 10),
+    title: str_(x.title, 200), text: str_(x.text, 8000),
+    img: /^[A-Za-z0-9_-]{10,120}$/.test(x.img || '') ? x.img : '',
+    layout: LAYOUTS.indexOf(x.layout) >= 0 ? x.layout : 'none',
+    bg: BGS.indexOf(x.bg) >= 0 ? x.bg : 'white',
+    after: /^[a-z0-9-]{1,40}$/.test(x.after || '') ? x.after : 'contact',
+    menu: !!x.menu, menuLabel: str_(x.menuLabel, 40)
+  }));
+  // the order of every section on the page (built-in ones by name, added ones by id)
+  const order = (Array.isArray(s.order) ? s.order : []).filter(id => /^[a-z0-9-]{1,40}$/.test(id)).slice(0, 80);
+  // replaced pictures: which picture on the page (key) now shows which uploaded picture (Drive id)
+  const images = {};
+  Object.keys(s.images || {}).slice(0, 100).forEach(k => { if (/^[a-z0-9._-]{1,60}$/.test(k) && /^[A-Za-z0-9_-]{10,120}$/.test(String(s.images[k]))) images[k] = String(s.images[k]); });
+  return { v: 1, texts: texts, sections: sections, order: order, images: images };
+}
+
+function saveSite_(req) {
+  const site = cleanSite_(req.site);
+  const text = JSON.stringify(site);
+  if (text.length > 400000) throw new Error('The page content is too large');
+  const sh = sheet_('Site', SITE_HEADERS);
+  const prev = readChunked_(sh, 2);
+  if (prev) { // keep the version that is being replaced
+    const hs = sheet_('Site History', SITE_HISTORY_HEADERS);
+    writeChunked_(hs, Math.max(hs.getLastRow(), 1) + 1, new Date().toISOString(), prev);
+    let n = hs.getLastRow() - 1; while (n > SITE_KEEP) { hs.deleteRow(2); n--; }
+  }
+  const at = new Date().toISOString();
+  writeChunked_(sh, 2, at, text);
+  const cache = CacheService.getScriptCache();
+  if (text.length < 90000) cache.put('site', text, 21600); else cache.remove('site');
+  return { ok: true, site: site, publishedAt: at };
+}
+
+function siteFolder_() {
+  const it = DriveApp.getFoldersByName(SITE_FOLDER_NAME);
+  return it.hasNext() ? it.next() : DriveApp.createFolder(SITE_FOLDER_NAME);
+}
+function siteUpload_(req) {
+  const m = /^data:(image\/(?:jpeg|png|webp));base64,(.*)$/.exec(req.imgData || '');
+  if (!m) throw new Error('Please choose a JPG, PNG or WEBP picture');
+  const f = siteFolder_().createFile(Utilities.newBlob(Utilities.base64Decode(m[2]), m[1], 'section-' + Date.now() + '.jpg'));
+  f.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW); // the home page is public
+  return { ok: true, id: f.getId() };
+}
+
+function siteHistory_() {
+  const hs = sheet_('Site History', SITE_HISTORY_HEADERS);
+  const last = hs.getLastRow();
+  if (last < 2) return [];
+  return hs.getRange(2, 1, last - 1, 1).getDisplayValues().map(r => ({ time: r[0] })).reverse();
+}
+function siteRollback_(req) {
+  const hs = sheet_('Site History', SITE_HISTORY_HEADERS);
+  const last = hs.getLastRow();
+  for (let r = 2; r <= last; r++) {
+    if (hs.getRange(r, 1, 1, 1).getDisplayValues()[0][0] === req.time) {
+      return saveSite_({ site: JSON.parse(readChunked_(hs, r)) }); // the current version goes into history first
+    }
+  }
+  throw new Error('That version was not found');
 }
